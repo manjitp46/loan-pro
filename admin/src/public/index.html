@@ -10,6 +10,131 @@
   <style>
     body { font-family: 'Inter', sans-serif; }
     .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* Dynamic Theme Mockup CSS Variables */
+    .mock-theme-emerald {
+      --mock-gradient: linear-gradient(135deg, #059669 0%, #0f766e 100%);
+      --mock-title-grad: linear-gradient(135deg, #059669 0%, #115e59 100%);
+      --mock-badge-bg: #d1fae5;
+      --mock-badge-text: #065f46;
+      --mock-badge-border: #a7f3d0;
+      --mock-tab-bg: #ecfdf5;
+      --mock-tab-text: #047857;
+      --mock-tab-border: #059669;
+      --mock-btn-bg: #059669;
+      --mock-btn-hover: #10b981;
+      --mock-accent: #34d399;
+      --mock-slider: #10b981;
+      --mock-border-color: #10b981;
+    }
+    .mock-theme-blue {
+      --mock-gradient: linear-gradient(135deg, #2563eb 0%, #0891b2 100%);
+      --mock-title-grad: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      --mock-badge-bg: #dbeafe;
+      --mock-badge-text: #1e40af;
+      --mock-badge-border: #bfdbfe;
+      --mock-tab-bg: #eff6ff;
+      --mock-tab-text: #1d4ed8;
+      --mock-tab-border: #2563eb;
+      --mock-btn-bg: #2563eb;
+      --mock-btn-hover: #3b82f6;
+      --mock-accent: #60a5fa;
+      --mock-slider: #3b82f6;
+      --mock-border-color: #3b82f6;
+    }
+    .mock-theme-indigo {
+      --mock-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      --mock-title-grad: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+      --mock-badge-bg: #e0e7ff;
+      --mock-badge-text: #3730a3;
+      --mock-badge-border: #c7d2fe;
+      --mock-tab-bg: #eef2ff;
+      --mock-tab-text: #4338ca;
+      --mock-tab-border: #4f46e5;
+      --mock-btn-bg: #4f46e5;
+      --mock-btn-hover: #6366f1;
+      --mock-accent: #818cf8;
+      --mock-slider: #6366f1;
+      --mock-border-color: #6366f1;
+    }
+    .mock-theme-violet {
+      --mock-gradient: linear-gradient(135deg, #7c3aed 0%, #c026d3 100%);
+      --mock-title-grad: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+      --mock-badge-bg: #ede9fe;
+      --mock-badge-text: #5b21b6;
+      --mock-badge-border: #ddd6fe;
+      --mock-tab-bg: #f5f3ff;
+      --mock-tab-text: #6d28d9;
+      --mock-tab-border: #7c3aed;
+      --mock-btn-bg: #7c3aed;
+      --mock-btn-hover: #8b5cf6;
+      --mock-accent: #a78bfa;
+      --mock-slider: #8b5cf6;
+      --mock-border-color: #8b5cf6;
+    }
+    .mock-theme-rose {
+      --mock-gradient: linear-gradient(135deg, #e11d48 0%, #db2777 100%);
+      --mock-title-grad: linear-gradient(135deg, #e11d48 0%, #9f1239 100%);
+      --mock-badge-bg: #ffe4e6;
+      --mock-badge-text: #9f1239;
+      --mock-badge-border: #fecdd3;
+      --mock-tab-bg: #fff1f2;
+      --mock-tab-text: #be123c;
+      --mock-tab-border: #e11d48;
+      --mock-btn-bg: #e11d48;
+      --mock-btn-hover: #f43f5e;
+      --mock-accent: #fb7185;
+      --mock-slider: #f43f5e;
+      --mock-border-color: #f43f5e;
+    }
+    .mock-theme-amber {
+      --mock-gradient: linear-gradient(135deg, #d97706 0%, #ea580c 100%);
+      --mock-title-grad: linear-gradient(135deg, #d97706 0%, #92400e 100%);
+      --mock-badge-bg: #fef3c7;
+      --mock-badge-text: #92400e;
+      --mock-badge-border: #fde68a;
+      --mock-tab-bg: #fffbeb;
+      --mock-tab-text: #b45309;
+      --mock-tab-border: #d97706;
+      --mock-btn-bg: #d97706;
+      --mock-btn-hover: #f59e0b;
+      --mock-accent: #fbbf24;
+      --mock-slider: #f59e0b;
+      --mock-border-color: #f59e0b;
+    }
+
+    .mock-banner-style { background: var(--mock-gradient); }
+    .mock-logo-style { background: var(--mock-gradient); }
+    .mock-title-style {
+      background: var(--mock-title-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .mock-badge-style {
+      background: var(--mock-badge-bg);
+      color: var(--mock-badge-text);
+      border: 1px solid var(--mock-badge-border);
+    }
+    .mock-tab-active-style {
+      background: var(--mock-tab-bg);
+      color: var(--mock-tab-text);
+      border-bottom: 2px solid var(--mock-tab-border);
+    }
+    .mock-btn-style {
+      background: var(--mock-btn-bg);
+    }
+    .mock-btn-style:hover {
+      background: var(--mock-btn-hover);
+    }
+    .mock-slider-style {
+      background: var(--mock-slider);
+    }
+    .mock-footer-icon-style {
+      background: var(--mock-btn-bg);
+    }
+    .mock-accent-text-style {
+      color: var(--mock-accent);
+    }
   </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen antialiased flex flex-col">
@@ -66,88 +191,252 @@
     <!-- TAB 1: SITE LOOK AND FEEL -->
     <section id="tab-theme" class="tab-content space-y-6">
       <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-xl">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4 mb-6">
           <div>
-            <h2 class="text-lg font-bold text-white">Site Appearance & Theme Customization</h2>
-            <p class="text-xs text-slate-400 mt-0.5">Control the public platform's brand title, color palette, announcements, and defaults</p>
+            <div class="flex items-center gap-2">
+              <h2 class="text-lg font-bold text-white">Site Appearance & Theme Customization</h2>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                LIVE PREVIEW SYNC
+              </span>
+            </div>
+            <p class="text-xs text-slate-400 mt-0.5">Edit branding, color themes, and announcements with instant live browser preview</p>
           </div>
-          <button onclick="saveSettings()" class="px-4 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-lg transition">
-            Save Look & Feel
-          </button>
+          <div class="flex items-center gap-3">
+            <button onclick="saveSettings()" id="btn-save-theme" class="px-5 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white rounded-xl shadow-lg transition flex items-center gap-1.5">
+              <span>💾 Save Look & Feel</span>
+            </button>
+          </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-          <!-- Theme Palette Selector -->
-          <div class="space-y-4 bg-slate-900/60 p-5 rounded-xl border border-slate-800">
-            <label class="block font-bold text-slate-300 uppercase tracking-wider text-[11px]">Primary Brand Color Palette</label>
-            <div class="grid grid-cols-3 gap-2.5" id="theme-color-options">
-              <label class="cursor-pointer border border-slate-700 p-3 rounded-xl flex items-center gap-2 hover:border-emerald-500 transition">
-                <input type="radio" name="brand_theme" value="emerald" class="accent-emerald-500">
-                <span class="w-4 h-4 rounded-full bg-emerald-500 flex-shrink-0"></span>
-                <span class="font-bold text-slate-200">Emerald</span>
-              </label>
-              <label class="cursor-pointer border border-slate-700 p-3 rounded-xl flex items-center gap-2 hover:border-blue-500 transition">
-                <input type="radio" name="brand_theme" value="blue" class="accent-blue-500">
-                <span class="w-4 h-4 rounded-full bg-blue-500 flex-shrink-0"></span>
-                <span class="font-bold text-slate-200">Ocean Blue</span>
-              </label>
-              <label class="cursor-pointer border border-slate-700 p-3 rounded-xl flex items-center gap-2 hover:border-indigo-500 transition">
-                <input type="radio" name="brand_theme" value="indigo" class="accent-indigo-500">
-                <span class="w-4 h-4 rounded-full bg-indigo-500 flex-shrink-0"></span>
-                <span class="font-bold text-slate-200">Indigo</span>
-              </label>
-              <label class="cursor-pointer border border-slate-700 p-3 rounded-xl flex items-center gap-2 hover:border-violet-500 transition">
-                <input type="radio" name="brand_theme" value="violet" class="accent-violet-500">
-                <span class="w-4 h-4 rounded-full bg-violet-500 flex-shrink-0"></span>
-                <span class="font-bold text-slate-200">Violet</span>
-              </label>
-              <label class="cursor-pointer border border-slate-700 p-3 rounded-xl flex items-center gap-2 hover:border-rose-500 transition">
-                <input type="radio" name="brand_theme" value="rose" class="accent-rose-500">
-                <span class="w-4 h-4 rounded-full bg-rose-500 flex-shrink-0"></span>
-                <span class="font-bold text-slate-200">Rose Red</span>
-              </label>
-              <label class="cursor-pointer border border-slate-700 p-3 rounded-xl flex items-center gap-2 hover:border-amber-500 transition">
-                <input type="radio" name="brand_theme" value="amber" class="accent-amber-500">
-                <span class="w-4 h-4 rounded-full bg-amber-500 flex-shrink-0"></span>
-                <span class="font-bold text-slate-200">Amber Gold</span>
-              </label>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 text-xs">
+          <!-- LEFT: Form Controls (5 columns) -->
+          <div class="lg:col-span-5 space-y-4">
+            <!-- Theme Palette Selector -->
+            <div class="space-y-3 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+              <div class="flex items-center justify-between">
+                <label class="block font-bold text-slate-300 uppercase tracking-wider text-[11px]">Primary Brand Color Palette</label>
+                <span id="theme-active-indicator" class="text-[11px] font-bold text-emerald-400">Emerald Active</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2" id="theme-color-options">
+                <label id="theme-card-emerald" class="theme-option-card cursor-pointer border-2 border-emerald-500 bg-slate-800/80 p-2.5 rounded-xl flex items-center gap-2 transition hover:bg-slate-800">
+                  <input type="radio" name="brand_theme" value="emerald" onchange="onThemeChanged('emerald')" class="accent-emerald-500" checked>
+                  <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 flex-shrink-0 shadow-sm"></span>
+                  <span class="font-bold text-slate-200 text-[11px]">Emerald</span>
+                </label>
+                <label id="theme-card-blue" class="theme-option-card cursor-pointer border border-slate-700 p-2.5 rounded-xl flex items-center gap-2 transition hover:bg-slate-800">
+                  <input type="radio" name="brand_theme" value="blue" onchange="onThemeChanged('blue')" class="accent-blue-500">
+                  <span class="w-3.5 h-3.5 rounded-full bg-blue-500 flex-shrink-0 shadow-sm"></span>
+                  <span class="font-bold text-slate-200 text-[11px]">Ocean Blue</span>
+                </label>
+                <label id="theme-card-indigo" class="theme-option-card cursor-pointer border border-slate-700 p-2.5 rounded-xl flex items-center gap-2 transition hover:bg-slate-800">
+                  <input type="radio" name="brand_theme" value="indigo" onchange="onThemeChanged('indigo')" class="accent-indigo-500">
+                  <span class="w-3.5 h-3.5 rounded-full bg-indigo-500 flex-shrink-0 shadow-sm"></span>
+                  <span class="font-bold text-slate-200 text-[11px]">Indigo</span>
+                </label>
+                <label id="theme-card-violet" class="theme-option-card cursor-pointer border border-slate-700 p-2.5 rounded-xl flex items-center gap-2 transition hover:bg-slate-800">
+                  <input type="radio" name="brand_theme" value="violet" onchange="onThemeChanged('violet')" class="accent-violet-500">
+                  <span class="w-3.5 h-3.5 rounded-full bg-violet-500 flex-shrink-0 shadow-sm"></span>
+                  <span class="font-bold text-slate-200 text-[11px]">Violet</span>
+                </label>
+                <label id="theme-card-rose" class="theme-option-card cursor-pointer border border-slate-700 p-2.5 rounded-xl flex items-center gap-2 transition hover:bg-slate-800">
+                  <input type="radio" name="brand_theme" value="rose" onchange="onThemeChanged('rose')" class="accent-rose-500">
+                  <span class="w-3.5 h-3.5 rounded-full bg-rose-500 flex-shrink-0 shadow-sm"></span>
+                  <span class="font-bold text-slate-200 text-[11px]">Rose Red</span>
+                </label>
+                <label id="theme-card-amber" class="theme-option-card cursor-pointer border border-slate-700 p-2.5 rounded-xl flex items-center gap-2 transition hover:bg-slate-800">
+                  <input type="radio" name="brand_theme" value="amber" onchange="onThemeChanged('amber')" class="accent-amber-500">
+                  <span class="w-3.5 h-3.5 rounded-full bg-amber-500 flex-shrink-0 shadow-sm"></span>
+                  <span class="font-bold text-slate-200 text-[11px]">Amber Gold</span>
+                </label>
+              </div>
+
+              <div class="pt-1">
+                <label class="block font-bold text-slate-300 uppercase tracking-wider text-[11px]">Default Currency</label>
+                <select id="cfg-default_currency" onchange="updateLivePreview()" class="w-full mt-1.5 bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-slate-200 outline-none focus:border-emerald-500 transition">
+                  <option value="INR">Indian Rupee (₹ INR)</option>
+                  <option value="USD">US Dollar ($ USD)</option>
+                </select>
+              </div>
             </div>
 
-            <div class="pt-2">
-              <label class="block font-bold text-slate-300 uppercase tracking-wider text-[11px]">Default Currency</label>
-              <select id="cfg-default_currency" class="w-full mt-1.5 bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-slate-200 outline-none">
-                <option value="INR">Indian Rupee (₹ INR)</option>
-                <option value="USD">US Dollar ($ USD)</option>
-              </select>
+            <!-- Site Texts -->
+            <div class="space-y-3.5 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+              <div>
+                <label class="block font-bold text-slate-300 uppercase tracking-wider text-[11px]">Platform Brand Title</label>
+                <input type="text" id="cfg-site_title" oninput="updateLivePreview()" class="w-full mt-1 bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-slate-200 outline-none font-semibold focus:border-emerald-500 transition" placeholder="LoanPro - Advanced Loan Comparison Platform">
+              </div>
+
+              <div>
+                <label class="block font-bold text-slate-300 uppercase tracking-wider text-[11px]">Site Tagline</label>
+                <input type="text" id="cfg-site_tagline" oninput="updateLivePreview()" class="w-full mt-1 bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-slate-200 outline-none focus:border-emerald-500 transition" placeholder="Institutional-Grade EMI & Loan Comparison Engine">
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between">
+                  <label class="font-bold text-slate-300 uppercase tracking-wider text-[11px]">Announcement Banner Message</label>
+                  <label class="flex items-center gap-1.5 cursor-pointer">
+                    <input type="checkbox" id="cfg-banner_enabled" onchange="updateLivePreview()" class="accent-emerald-500" checked>
+                    <span class="text-[11px] text-slate-300 font-semibold">Show Banner</span>
+                  </label>
+                </div>
+                <textarea id="cfg-announcement_banner" oninput="updateLivePreview()" rows="2" class="w-full mt-1.5 bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-200 outline-none focus:border-emerald-500 transition" placeholder="Special Festive Home Loan Rates: Starting from 8.35% p.a.!"></textarea>
+              </div>
+
+              <div>
+                <label class="block font-bold text-slate-300 uppercase tracking-wider text-[11px]">Footer Disclaimer</label>
+                <input type="text" id="cfg-footer_disclaimer" oninput="updateLivePreview()" class="w-full mt-1 bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-slate-200 outline-none focus:border-emerald-500 transition" placeholder="LoanPro financial calculations are for estimation purposes.">
+              </div>
             </div>
           </div>
 
-          <!-- Site Texts -->
-          <div class="space-y-4 bg-slate-900/60 p-5 rounded-xl border border-slate-800">
-            <div>
-              <label class="block font-bold text-slate-300 uppercase tracking-wider text-[11px]">Platform Brand Title</label>
-              <input type="text" id="cfg-site_title" class="w-full mt-1 bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-slate-200 outline-none font-semibold">
-            </div>
-
-            <div>
-              <label class="block font-bold text-slate-300 uppercase tracking-wider text-[11px]">Site Tagline</label>
-              <input type="text" id="cfg-site_tagline" class="w-full mt-1 bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-slate-200 outline-none">
-            </div>
-
-            <div>
-              <div class="flex items-center justify-between">
-                <label class="font-bold text-slate-300 uppercase tracking-wider text-[11px]">Announcement Banner Message</label>
-                <label class="flex items-center gap-1.5 cursor-pointer">
-                  <input type="checkbox" id="cfg-banner_enabled" class="accent-emerald-500">
-                  <span class="text-[11px] text-slate-400">Show Banner</span>
-                </label>
+          <!-- RIGHT: Real-Time Interactive Live Preview Mockup (7 columns) -->
+          <div class="lg:col-span-7 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-slate-200 uppercase tracking-wider text-[11px]">Interactive Preview</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                  Live Viewport
+                </span>
               </div>
-              <textarea id="cfg-announcement_banner" rows="2" class="w-full mt-1.5 bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-200 outline-none"></textarea>
+              <!-- Viewport Switcher -->
+              <div class="flex items-center gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800 text-[10px] font-bold">
+                <button onclick="setPreviewDevice('desktop')" id="prev-btn-desktop" class="px-2.5 py-1 rounded bg-slate-800 text-emerald-400 border border-slate-700 transition">
+                  🖥️ Desktop
+                </button>
+                <button onclick="setPreviewDevice('mobile')" id="prev-btn-mobile" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition">
+                  📱 Mobile
+                </button>
+              </div>
             </div>
 
-            <div>
-              <label class="block font-bold text-slate-300 uppercase tracking-wider text-[11px]">Footer Disclaimer</label>
-              <input type="text" id="cfg-footer_disclaimer" class="w-full mt-1 bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-slate-200 outline-none">
+            <!-- Simulated Browser Frame -->
+            <div id="preview-outer-frame" class="w-full border border-slate-800 rounded-2xl bg-slate-950 shadow-2xl overflow-hidden transition-all duration-300">
+              <!-- Browser Chrome Header Bar -->
+              <div class="bg-slate-950 px-4 py-2 border-b border-slate-800 flex items-center justify-between select-none">
+                <div class="flex items-center gap-1.5">
+                  <div class="w-2.5 h-2.5 rounded-full bg-rose-500/80"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-md px-3 py-0.5 flex items-center gap-1.5 text-[10px] text-slate-400 font-mono max-w-xs w-full justify-center">
+                  <span class="text-emerald-400">🔒</span>
+                  <span class="text-slate-300">http://localhost:3000</span>
+                </div>
+                <div class="text-[10px] text-slate-500 font-mono" id="preview-mode-label">1280px</div>
+              </div>
+
+              <!-- Viewport Canvas (Applies Theme CSS Variables) -->
+              <div id="mockup-canvas" class="mock-theme-emerald bg-slate-50 text-slate-800 font-sans flex flex-col min-h-[460px] transition-all">
+                <!-- 1. Simulated Announcement Banner -->
+                <div id="mock-banner" class="mock-banner-style text-white text-[10px] font-semibold px-4 py-1.5 flex items-center justify-between shadow-xs transition-all duration-300">
+                  <div class="flex items-center gap-2 truncate flex-1">
+                    <span class="text-xs">📢</span>
+                    <span id="mock-banner-text" class="truncate font-medium">Special Festive Home Loan Rates: Starting from 8.35% p.a.!</span>
+                  </div>
+                  <span class="opacity-70 hover:opacity-100 cursor-pointer text-xs ml-2">&times;</span>
+                </div>
+
+                <!-- 2. Simulated Navbar -->
+                <header class="bg-white/95 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between shadow-xs">
+                  <div class="flex items-center gap-2.5">
+                    <div class="mock-logo-style w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-black shadow-xs">
+                      🧮
+                    </div>
+                    <div>
+                      <span id="mock-site-title" class="mock-title-style text-xs font-black">
+                        LoanPro
+                      </span>
+                      <span class="mock-badge-style ml-1.5 text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                        PRO ENGINE
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Nav Tabs -->
+                  <div class="hidden sm:flex items-center gap-1 text-[10px] font-semibold">
+                    <span class="mock-tab-active-style px-2.5 py-1 rounded-md font-bold">EMI Calculator</span>
+                    <span class="px-2 py-1 text-slate-500">Compare</span>
+                    <span class="px-2 py-1 text-slate-500">Prepayment</span>
+                    <span class="px-2 py-1 text-slate-500">Refinance</span>
+                  </div>
+
+                  <!-- Currency Switcher Badge -->
+                  <div id="mock-currency-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-slate-700">
+                    ₹ INR
+                  </div>
+                </header>
+
+                <!-- 3. Simulated Calculator Body -->
+                <div class="p-4 space-y-3 flex-1 bg-slate-50">
+                  <!-- Tagline Header -->
+                  <div class="text-center py-1">
+                    <h3 id="mock-calculator-heading" class="text-xs font-black text-slate-800">Home Loan EMI Calculator</h3>
+                    <p id="mock-site-tagline" class="text-[10px] text-slate-500">Institutional-Grade EMI & Loan Comparison Engine</p>
+                  </div>
+
+                  <!-- Calculator Mock Card -->
+                  <div class="bg-white rounded-xl border border-slate-200 p-3.5 shadow-xs space-y-3 max-w-lg mx-auto w-full">
+                    <div class="flex items-center justify-between text-[11px]">
+                      <span class="font-bold text-slate-700">Loan Amount</span>
+                      <span id="mock-loan-amount" class="font-black text-slate-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                        ₹ 50,00,000
+                      </span>
+                    </div>
+
+                    <!-- Mini Slider Simulation -->
+                    <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                      <div class="mock-slider-style h-full w-2/3 transition-all duration-300"></div>
+                    </div>
+
+                    <!-- Output Metric 3-Column Boxes -->
+                    <div class="grid grid-cols-3 gap-2 text-center pt-1">
+                      <div class="p-2 rounded-lg bg-slate-50 border border-slate-200/80">
+                        <span class="text-[9px] text-slate-500 uppercase font-semibold block">Monthly EMI</span>
+                        <span id="mock-emi" class="text-[11px] font-extrabold text-slate-900">₹ 42,918</span>
+                      </div>
+                      <div class="p-2 rounded-lg bg-slate-50 border border-slate-200/80">
+                        <span class="text-[9px] text-slate-500 uppercase font-semibold block">Total Interest</span>
+                        <span id="mock-interest" class="text-[11px] font-extrabold text-slate-900">₹ 27.30 L</span>
+                      </div>
+                      <div class="p-2 rounded-lg bg-slate-50 border border-slate-200/80">
+                        <span class="text-[9px] text-slate-500 uppercase font-semibold block">Total Payment</span>
+                        <span id="mock-total" class="text-[11px] font-extrabold text-slate-900">₹ 77.30 L</span>
+                      </div>
+                    </div>
+
+                    <!-- CTA Button -->
+                    <div class="pt-1">
+                      <button class="mock-btn-style w-full py-1.5 rounded-lg text-white font-bold text-[10px] shadow-xs flex items-center justify-center gap-1.5 transition">
+                        <span>Calculate Detailed Amortization Schedule</span>
+                        <span>→</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 4. Simulated Footer -->
+                <footer class="bg-slate-900 text-slate-400 text-[9px] px-4 py-2.5 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2">
+                  <div class="flex items-center gap-1.5 truncate">
+                    <div class="mock-footer-icon-style w-4 h-4 rounded flex items-center justify-center text-white text-[8px] font-bold">
+                      🧮
+                    </div>
+                    <span id="mock-footer-title" class="font-bold text-slate-200">LoanPro</span>
+                    <span class="text-slate-600">|</span>
+                    <span id="mock-footer-disclaimer" class="truncate max-w-xs text-slate-400">LoanPro financial calculations are for estimation purposes.</span>
+                  </div>
+                  <span class="mock-accent-text-style font-semibold">Admin Console ↗</span>
+                </footer>
+              </div>
+            </div>
+
+            <!-- Preview Live Notes -->
+            <div class="flex items-center justify-between text-[11px] text-slate-400 px-1 pt-1">
+              <span>💡 All text & color changes update instantly in the preview above</span>
+              <a href="http://localhost:3000" target="_blank" class="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1 transition">
+                <span>Open Live Site</span>
+                <span>↗</span>
+              </a>
             </div>
           </div>
         </div>
@@ -445,48 +734,179 @@
       if (tabId === 'theme') loadSettings();
     }
 
+    // Theme Metadata Map
+    const THEME_META = {
+      emerald: { label: 'Emerald Active', border: 'border-emerald-500', text: 'text-emerald-400' },
+      blue: { label: 'Ocean Blue Active', border: 'border-blue-500', text: 'text-blue-400' },
+      indigo: { label: 'Indigo Active', border: 'border-indigo-500', text: 'text-indigo-400' },
+      violet: { label: 'Violet Active', border: 'border-violet-500', text: 'text-violet-400' },
+      rose: { label: 'Rose Red Active', border: 'border-rose-500', text: 'text-rose-400' },
+      amber: { label: 'Amber Gold Active', border: 'border-amber-500', text: 'text-amber-400' },
+    };
+
+    function onThemeChanged(theme) {
+      const radio = document.querySelector(`input[name="brand_theme"][value="${theme}"]`);
+      if (radio) radio.checked = true;
+      updateLivePreview();
+    }
+
+    function setPreviewDevice(device) {
+      const frame = document.getElementById('preview-outer-frame');
+      const btnDesktop = document.getElementById('prev-btn-desktop');
+      const btnMobile = document.getElementById('prev-btn-mobile');
+      const modeLabel = document.getElementById('preview-mode-label');
+
+      if (device === 'mobile') {
+        frame.classList.add('max-w-[360px]', 'mx-auto', 'border-4', 'border-slate-700', 'rounded-[2rem]');
+        btnMobile.className = 'px-2.5 py-1 rounded bg-slate-800 text-emerald-400 border border-slate-700 transition';
+        btnDesktop.className = 'px-2.5 py-1 rounded text-slate-400 hover:text-white transition';
+        modeLabel.innerText = '375px (Mobile)';
+      } else {
+        frame.classList.remove('max-w-[360px]', 'mx-auto', 'border-4', 'border-slate-700', 'rounded-[2rem]');
+        btnDesktop.className = 'px-2.5 py-1 rounded bg-slate-800 text-emerald-400 border border-slate-700 transition';
+        btnMobile.className = 'px-2.5 py-1 rounded text-slate-400 hover:text-white transition';
+        modeLabel.innerText = '1280px (Desktop)';
+      }
+    }
+
+    function updateLivePreview() {
+      const siteTitle = document.getElementById('cfg-site_title').value.trim() || 'LoanPro - Advanced Loan Comparison Platform';
+      const siteTagline = document.getElementById('cfg-site_tagline').value.trim() || 'Institutional-Grade EMI & Loan Comparison Engine';
+      const announcement = document.getElementById('cfg-announcement_banner').value.trim() || 'Special Festive Home Loan Rates: Starting from 8.35% p.a.!';
+      const bannerEnabled = document.getElementById('cfg-banner_enabled').checked;
+      const disclaimer = document.getElementById('cfg-footer_disclaimer').value.trim() || 'LoanPro financial calculations are for estimation purposes.';
+      const currency = document.getElementById('cfg-default_currency').value || 'INR';
+
+      const selectedRadio = document.querySelector('input[name="brand_theme"]:checked');
+      const theme = selectedRadio ? selectedRadio.value : 'emerald';
+
+      // 1. Update Mockup Theme Classes
+      const canvas = document.getElementById('mockup-canvas');
+      canvas.className = `mock-theme-${theme} bg-slate-50 text-slate-800 font-sans flex flex-col min-h-[460px] transition-all`;
+
+      // 2. Update Theme Option Card Highlights
+      for (const [key, meta] of Object.entries(THEME_META)) {
+        const card = document.getElementById(`theme-card-${key}`);
+        if (!card) continue;
+        if (key === theme) {
+          card.className = `theme-option-card cursor-pointer border-2 ${meta.border} bg-slate-800/90 shadow-md p-2.5 rounded-xl flex items-center gap-2 transition`;
+        } else {
+          card.className = 'theme-option-card cursor-pointer border border-slate-700 p-2.5 rounded-xl flex items-center gap-2 transition hover:bg-slate-800';
+        }
+      }
+
+      // Update Active Indicator Label
+      const indicator = document.getElementById('theme-active-indicator');
+      if (indicator && THEME_META[theme]) {
+        indicator.innerText = THEME_META[theme].label;
+        indicator.className = `text-[11px] font-bold ${THEME_META[theme].text}`;
+      }
+
+      // 3. Update Announcement Banner
+      const mockBanner = document.getElementById('mock-banner');
+      const mockBannerText = document.getElementById('mock-banner-text');
+      if (bannerEnabled && announcement) {
+        mockBanner.classList.remove('hidden');
+        mockBannerText.innerText = announcement;
+      } else {
+        mockBanner.classList.add('hidden');
+      }
+
+      // 4. Update Header & Navbar
+      const brandName = siteTitle.split(' - ')[0] || 'LoanPro';
+      document.getElementById('mock-site-title').innerText = brandName;
+      document.getElementById('mock-site-tagline').innerText = siteTagline;
+      document.getElementById('mock-currency-badge').innerText = (currency === 'USD') ? '$ USD' : '₹ INR';
+
+      // 5. Update Metrics & Currency Values
+      const mockLoanAmount = document.getElementById('mock-loan-amount');
+      const mockEmi = document.getElementById('mock-emi');
+      const mockInterest = document.getElementById('mock-interest');
+      const mockTotal = document.getElementById('mock-total');
+
+      if (currency === 'USD') {
+        mockLoanAmount.innerText = '$ 500,000';
+        mockEmi.innerText = '$ 4,292';
+        mockInterest.innerText = '$ 273,000';
+        mockTotal.innerText = '$ 773,000';
+      } else {
+        mockLoanAmount.innerText = '₹ 50,00,000';
+        mockEmi.innerText = '₹ 42,918';
+        mockInterest.innerText = '₹ 27.30 L';
+        mockTotal.innerText = '₹ 77.30 L';
+      }
+
+      // 6. Update Footer
+      document.getElementById('mock-footer-title').innerText = brandName;
+      document.getElementById('mock-footer-disclaimer').innerText = disclaimer;
+    }
+
     // Load Settings
     async function loadSettings() {
-      const res = await fetch('/api/admin/settings');
-      const data = await res.json();
-      if (data.settings) {
-        const s = data.settings;
-        if (s.site_title) document.getElementById('cfg-site_title').value = s.site_title;
-        if (s.site_tagline) document.getElementById('cfg-site_tagline').value = s.site_tagline;
-        if (s.announcement_banner) document.getElementById('cfg-announcement_banner').value = s.announcement_banner;
-        if (s.footer_disclaimer) document.getElementById('cfg-footer_disclaimer').value = s.footer_disclaimer;
-        if (s.default_currency) document.getElementById('cfg-default_currency').value = s.default_currency;
-        document.getElementById('cfg-banner_enabled').checked = (s.banner_enabled === 'true');
+      try {
+        const res = await fetch('/api/admin/settings');
+        const data = await res.json();
+        if (data.settings) {
+          const s = data.settings;
+          if (s.site_title) document.getElementById('cfg-site_title').value = s.site_title;
+          if (s.site_tagline) document.getElementById('cfg-site_tagline').value = s.site_tagline;
+          if (s.announcement_banner) document.getElementById('cfg-announcement_banner').value = s.announcement_banner;
+          if (s.footer_disclaimer) document.getElementById('cfg-footer_disclaimer').value = s.footer_disclaimer;
+          if (s.default_currency) document.getElementById('cfg-default_currency').value = s.default_currency;
+          document.getElementById('cfg-banner_enabled').checked = (s.banner_enabled === 'true');
 
-        if (s.brand_theme) {
-          const radio = document.querySelector(`input[name="brand_theme"][value="${s.brand_theme}"]`);
-          if (radio) radio.checked = true;
+          if (s.brand_theme) {
+            const radio = document.querySelector(`input[name="brand_theme"][value="${s.brand_theme}"]`);
+            if (radio) radio.checked = true;
+          }
         }
+      } catch (err) {
+        console.error('Failed to load settings:', err);
+      } finally {
+        updateLivePreview();
       }
     }
 
     async function saveSettings() {
-      const themeRadio = document.querySelector('input[name="brand_theme"]:checked');
-      const payload = {
-        site_title: document.getElementById('cfg-site_title').value,
-        site_tagline: document.getElementById('cfg-site_tagline').value,
-        announcement_banner: document.getElementById('cfg-announcement_banner').value,
-        banner_enabled: document.getElementById('cfg-banner_enabled').checked ? 'true' : 'false',
-        footer_disclaimer: document.getElementById('cfg-footer_disclaimer').value,
-        default_currency: document.getElementById('cfg-default_currency').value,
-        brand_theme: themeRadio ? themeRadio.value : 'emerald'
-      };
+      const btn = document.getElementById('btn-save-theme');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<span>⏳ Saving...</span>';
+      btn.disabled = true;
 
-      const res = await fetch('/api/admin/settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const data = await res.json();
-      if (data.success) {
-        showToast('Site Look & Feel updated successfully!');
-      } else {
-        alert('Failed: ' + data.error);
+      try {
+        const themeRadio = document.querySelector('input[name="brand_theme"]:checked');
+        const payload = {
+          site_title: document.getElementById('cfg-site_title').value,
+          site_tagline: document.getElementById('cfg-site_tagline').value,
+          announcement_banner: document.getElementById('cfg-announcement_banner').value,
+          banner_enabled: document.getElementById('cfg-banner_enabled').checked ? 'true' : 'false',
+          footer_disclaimer: document.getElementById('cfg-footer_disclaimer').value,
+          default_currency: document.getElementById('cfg-default_currency').value,
+          brand_theme: themeRadio ? themeRadio.value : 'emerald'
+        };
+
+        const res = await fetch('/api/admin/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Site Look & Feel updated successfully!');
+          btn.innerHTML = '<span>✓ Saved!</span>';
+          setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+          }, 1500);
+        } else {
+          alert('Failed: ' + data.error);
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }
+      } catch (err) {
+        alert('Error saving settings: ' + err.message);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
       }
     }
 

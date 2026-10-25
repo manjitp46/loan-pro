@@ -18,7 +18,74 @@ interface NavbarProps {
   currency: CurrencyType;
   setCurrency: (c: CurrencyType) => void;
   onOpenSaved: () => void;
+  siteTitle?: string;
+  brandTheme?: string;
 }
+
+const THEME_CLASSES: Record<string, {
+  logoGradient: string;
+  titleGradient: string;
+  badge: string;
+  activeTab: string;
+  activeIcon: string;
+  currencyActive: string;
+  bookmarkIcon: string;
+}> = {
+  emerald: {
+    logoGradient: 'from-emerald-500 to-teal-700 shadow-emerald-500/20',
+    titleGradient: 'from-emerald-600 to-teal-800',
+    badge: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    activeTab: 'bg-emerald-50 text-emerald-800 border-b-2 border-emerald-600',
+    activeIcon: 'text-emerald-600',
+    currencyActive: 'text-emerald-700',
+    bookmarkIcon: 'text-emerald-600',
+  },
+  blue: {
+    logoGradient: 'from-blue-500 to-cyan-700 shadow-blue-500/20',
+    titleGradient: 'from-blue-600 to-cyan-800',
+    badge: 'bg-blue-100 text-blue-800 border-blue-200',
+    activeTab: 'bg-blue-50 text-blue-800 border-b-2 border-blue-600',
+    activeIcon: 'text-blue-600',
+    currencyActive: 'text-blue-700',
+    bookmarkIcon: 'text-blue-600',
+  },
+  indigo: {
+    logoGradient: 'from-indigo-500 to-violet-700 shadow-indigo-500/20',
+    titleGradient: 'from-indigo-600 to-violet-800',
+    badge: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+    activeTab: 'bg-indigo-50 text-indigo-800 border-b-2 border-indigo-600',
+    activeIcon: 'text-indigo-600',
+    currencyActive: 'text-indigo-700',
+    bookmarkIcon: 'text-indigo-600',
+  },
+  violet: {
+    logoGradient: 'from-violet-500 to-fuchsia-700 shadow-violet-500/20',
+    titleGradient: 'from-violet-600 to-fuchsia-800',
+    badge: 'bg-violet-100 text-violet-800 border-violet-200',
+    activeTab: 'bg-violet-50 text-violet-800 border-b-2 border-violet-600',
+    activeIcon: 'text-violet-600',
+    currencyActive: 'text-violet-700',
+    bookmarkIcon: 'text-violet-600',
+  },
+  rose: {
+    logoGradient: 'from-rose-500 to-pink-700 shadow-rose-500/20',
+    titleGradient: 'from-rose-600 to-pink-800',
+    badge: 'bg-rose-100 text-rose-800 border-rose-200',
+    activeTab: 'bg-rose-50 text-rose-800 border-b-2 border-rose-600',
+    activeIcon: 'text-rose-600',
+    currencyActive: 'text-rose-700',
+    bookmarkIcon: 'text-rose-600',
+  },
+  amber: {
+    logoGradient: 'from-amber-500 to-orange-700 shadow-amber-500/20',
+    titleGradient: 'from-amber-600 to-orange-800',
+    badge: 'bg-amber-100 text-amber-800 border-amber-200',
+    activeTab: 'bg-amber-50 text-amber-800 border-b-2 border-amber-600',
+    activeIcon: 'text-amber-600',
+    currencyActive: 'text-amber-700',
+    bookmarkIcon: 'text-amber-600',
+  },
+};
 
 export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
@@ -26,7 +93,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   currency,
   setCurrency,
   onOpenSaved,
+  siteTitle,
+  brandTheme = 'emerald',
 }) => {
+  const currentTheme = THEME_CLASSES[brandTheme] || THEME_CLASSES.emerald;
+  const brandName = siteTitle ? siteTitle.split(' - ')[0] : 'LoanPro';
+
   const tabs = [
     { id: 'emi', label: 'EMI Calculator', icon: Calculator },
     { id: 'comparison', label: 'Compare Loans', icon: GitCompare },
@@ -42,14 +114,14 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo */}
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('emi')}>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-white shadow-md shadow-emerald-500/20">
+            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${currentTheme.logoGradient} flex items-center justify-center text-white shadow-md`}>
               <Calculator className="w-6 h-6" />
             </div>
             <div>
-              <span className="text-xl font-black bg-gradient-to-r from-emerald-600 to-teal-800 bg-clip-text text-transparent">
-                LoanPro
+              <span className={`text-xl font-black bg-gradient-to-r ${currentTheme.titleGradient} bg-clip-text text-transparent`}>
+                {brandName}
               </span>
-              <span className="hidden sm:inline-block ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+              <span className={`hidden sm:inline-block ml-2 text-xs font-semibold px-2 py-0.5 rounded-full ${currentTheme.badge}`}>
                 PRO ENGINE
               </span>
             </div>
@@ -63,7 +135,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={() => setCurrency('INR')}
                 className={`flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-md transition-all ${
                   currency === 'INR'
-                    ? 'bg-white text-emerald-700 shadow-xs'
+                    ? `bg-white ${currentTheme.currencyActive} shadow-xs`
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
                 title="Indian Rupee (₹)"
@@ -75,7 +147,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={() => setCurrency('USD')}
                 className={`flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-md transition-all ${
                   currency === 'USD'
-                    ? 'bg-white text-emerald-700 shadow-xs'
+                    ? `bg-white ${currentTheme.currencyActive} shadow-xs`
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
                 title="US Dollar ($)"
@@ -90,7 +162,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={onOpenSaved}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded-lg shadow-xs transition"
             >
-              <Bookmark className="w-4 h-4 text-emerald-600" />
+              <Bookmark className={`w-4 h-4 ${currentTheme.bookmarkIcon}`} />
               <span className="hidden sm:inline">Saved Calculations</span>
             </button>
           </div>
@@ -107,11 +179,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg whitespace-nowrap transition-colors ${
                   isActive
-                    ? 'bg-emerald-50 text-emerald-800 border-b-2 border-emerald-600'
+                    ? currentTheme.activeTab
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-emerald-600' : 'text-slate-400'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? currentTheme.activeIcon : 'text-slate-400'}`} />
                 <span>{tab.label}</span>
               </button>
             );
