@@ -57,7 +57,7 @@ export const App: React.FC = () => {
         if (cfg.site_title) {
           document.title = cfg.site_title;
         }
-        if (cfg.default_currency && (cfg.default_currency === 'INR' || cfg.default_currency === 'USD')) {
+        if (cfg.default_currency) {
           setCurrency(cfg.default_currency as CurrencyType);
         }
       }
@@ -105,6 +105,10 @@ export const App: React.FC = () => {
   const footerTheme = FOOTER_THEMES[activeTheme] || FOOTER_THEMES.emerald;
   const brandName = settings.site_title ? settings.site_title.split(' - ')[0] : 'LoanPro';
 
+  const supportedCurrencies = settings.supported_currencies
+    ? settings.supported_currencies.split(',').map((s) => s.trim()).filter(Boolean)
+    : undefined;
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
       {/* Dynamic Announcement Banner (Configured via Admin Console) */}
@@ -133,6 +137,7 @@ export const App: React.FC = () => {
         onOpenSaved={() => setIsSavedModalOpen(true)}
         siteTitle={settings.site_title}
         brandTheme={activeTheme}
+        supportedCurrencies={supportedCurrencies}
       />
 
       {/* Main Content Area */}

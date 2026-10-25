@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ArrowRightLeft, CheckCircle, AlertTriangle, XCircle, TrendingDown, Clock, ShieldCheck, Share2 } from 'lucide-react';
 import { BalanceTransferResult, CurrencyType } from '../../types';
 import { ClientCalculatorEngine } from '../../utils/calculatorEngine';
-import { formatCurrency, formatPercent, formatTenure } from '../../utils/formatters';
+import { formatCurrency, formatPercent, formatTenure, getCurrencySymbol } from '../../utils/formatters';
 
 interface TransferProps {
   currency: CurrencyType;
@@ -86,7 +86,7 @@ export const BalanceTransfer: React.FC<TransferProps> = ({ currency, onSaveShare
               <div>
                 <label className="text-xs font-semibold text-slate-600">Outstanding Principal</label>
                 <div className="flex items-center bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1">
-                  <span className="font-bold text-slate-400 mr-1">{currency === 'INR' ? '₹' : '$'}</span>
+                  <span className="font-bold text-slate-400 mr-1">{getCurrencySymbol(currency)}</span>
                   <input
                     type="number"
                     value={outstandingBalance}

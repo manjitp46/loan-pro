@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TrendingDown, Calendar, Plus, Trash2, Clock, CheckCircle, Sparkles, Share2 } from 'lucide-react';
 import { CurrencyType, LumpSumPrepayment, PrepaymentSimulationResult } from '../../types';
 import { ClientCalculatorEngine } from '../../utils/calculatorEngine';
-import { formatCurrency, formatPercent, formatTenure } from '../../utils/formatters';
+import { formatCurrency, formatPercent, formatTenure, getCurrencySymbol } from '../../utils/formatters';
 import { AmortizationTable } from '../schedule/AmortizationTable';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
 
@@ -176,7 +176,7 @@ export const PrepaymentSimulator: React.FC<PrepaymentProps> = ({ currency, onSav
             <div>
               <label className="text-xs font-bold text-slate-600 uppercase">Loan Amount</label>
               <div className="flex items-center bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1">
-                <span className="font-bold text-slate-400 mr-1">{currency === 'INR' ? '₹' : '$'}</span>
+                <span className="font-bold text-slate-400 mr-1">{getCurrencySymbol(currency)}</span>
                 <input
                   type="number"
                   value={principal}
@@ -216,7 +216,7 @@ export const PrepaymentSimulator: React.FC<PrepaymentProps> = ({ currency, onSav
                 <p className="text-[11px] text-slate-500">Added on top of every scheduled monthly EMI</p>
               </div>
               <div className="flex items-center bg-white border border-slate-300 rounded-lg px-2.5 py-1">
-                <span className="font-bold text-slate-400 mr-1">{currency === 'INR' ? '₹' : '$'}</span>
+                <span className="font-bold text-slate-400 mr-1">{getCurrencySymbol(currency)}</span>
                 <input
                   type="number"
                   value={extraMonthly}
@@ -245,7 +245,7 @@ export const PrepaymentSimulator: React.FC<PrepaymentProps> = ({ currency, onSav
                 <p className="text-[11px] text-slate-500">Paid once every 12 months (e.g. annual bonus / extra EMI)</p>
               </div>
               <div className="flex items-center bg-white border border-slate-300 rounded-lg px-2.5 py-1">
-                <span className="font-bold text-slate-400 mr-1">{currency === 'INR' ? '₹' : '$'}</span>
+                <span className="font-bold text-slate-400 mr-1">{getCurrencySymbol(currency)}</span>
                 <input
                   type="number"
                   value={annualPrepay}
@@ -300,7 +300,7 @@ export const PrepaymentSimulator: React.FC<PrepaymentProps> = ({ currency, onSav
                   </div>
 
                   <div className="flex-1 flex items-center gap-1 bg-white border border-slate-300 rounded px-2 py-1">
-                    <span className="text-xs font-bold text-slate-400">{currency === 'INR' ? '₹' : '$'}</span>
+                    <span className="text-xs font-bold text-slate-400">{getCurrencySymbol(currency)}</span>
                     <input
                       type="number"
                       value={ls.amount}

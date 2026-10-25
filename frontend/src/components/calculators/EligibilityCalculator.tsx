@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { UserCheck, ShieldAlert, CheckCircle2, AlertCircle, Info, Sparkles, Share2 } from 'lucide-react';
 import { CurrencyType, LoanEligibilityResult, LoanType } from '../../types';
 import { ClientCalculatorEngine } from '../../utils/calculatorEngine';
-import { formatCurrency, formatPercent } from '../../utils/formatters';
+import { formatCurrency, formatPercent, getCurrencySymbol } from '../../utils/formatters';
 
 interface EligibilityProps {
   currency: CurrencyType;
@@ -78,7 +78,7 @@ export const EligibilityCalculator: React.FC<EligibilityProps> = ({ currency, on
                 Net Monthly Take-Home Income
               </label>
               <div className="flex items-center bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1">
-                <span className="font-bold text-slate-400 mr-1">{currency === 'INR' ? '₹' : '$'}</span>
+                <span className="font-bold text-slate-400 mr-1">{getCurrencySymbol(currency)}</span>
                 <input
                   type="number"
                   value={monthlyIncome}
@@ -106,7 +106,7 @@ export const EligibilityCalculator: React.FC<EligibilityProps> = ({ currency, on
                 Existing Monthly Obligations (Car, Personal, Cards)
               </label>
               <div className="flex items-center bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1">
-                <span className="font-bold text-slate-400 mr-1">{currency === 'INR' ? '₹' : '$'}</span>
+                <span className="font-bold text-slate-400 mr-1">{getCurrencySymbol(currency)}</span>
                 <input
                   type="number"
                   value={existingEmi}

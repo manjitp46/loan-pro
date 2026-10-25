@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Trash2, Award, TrendingDown, ArrowDownRight, FileText, Share2, CheckCircle2 } from 'lucide-react';
 import { CurrencyType, LoanComparisonResult, LoanOfferItem } from '../../types';
 import { ClientCalculatorEngine } from '../../utils/calculatorEngine';
-import { formatCurrency, formatPercent } from '../../utils/formatters';
+import { formatCurrency, formatPercent, getCurrencySymbol } from '../../utils/formatters';
 import { exportComparisonToPdf } from '../../utils/exportUtils';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
 
@@ -193,7 +193,7 @@ export const LoanComparison: React.FC<ComparisonProps> = ({ currency, onSaveShar
                   <div>
                     <label className="text-slate-500 font-medium">Loan Amount</label>
                     <div className="flex items-center bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 mt-0.5">
-                      <span className="font-bold text-slate-400 mr-1">{currency === 'INR' ? '₹' : '$'}</span>
+                      <span className="font-bold text-slate-400 mr-1">{getCurrencySymbol(currency)}</span>
                       <input
                         type="number"
                         value={orig?.principal || offer.principal}

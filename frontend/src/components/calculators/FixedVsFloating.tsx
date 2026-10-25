@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Trash2, Percent, TrendingUp, TrendingDown, ArrowRight, Share2 } from 'lucide-react';
 import { CurrencyType } from '../../types';
 import { ClientCalculatorEngine } from '../../utils/calculatorEngine';
-import { formatCurrency, formatPercent, formatTenure } from '../../utils/formatters';
+import { formatCurrency, formatPercent, formatTenure, getCurrencySymbol } from '../../utils/formatters';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
 
 interface FixedVsFloatingProps {
@@ -132,7 +132,7 @@ export const FixedVsFloating: React.FC<FixedVsFloatingProps> = ({ currency, onSa
             <div>
               <label className="text-xs font-semibold text-slate-600">Principal</label>
               <div className="flex items-center bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1">
-                <span className="font-bold text-slate-400 mr-1">{currency === 'INR' ? '₹' : '$'}</span>
+                <span className="font-bold text-slate-400 mr-1">{getCurrencySymbol(currency)}</span>
                 <input
                   type="number"
                   value={principal}

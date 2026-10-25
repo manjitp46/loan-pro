@@ -251,11 +251,45 @@
                 </label>
               </div>
 
-              <div class="pt-1">
-                <label class="block font-bold text-slate-300 uppercase tracking-wider text-[11px]">Default Currency</label>
-                <select id="cfg-default_currency" onchange="updateLivePreview()" class="w-full mt-1.5 bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-slate-200 outline-none focus:border-emerald-500 transition">
-                  <option value="INR">Indian Rupee (₹ INR)</option>
-                  <option value="USD">US Dollar ($ USD)</option>
+            </div>
+
+            <!-- Supported Currencies Manager -->
+            <div class="space-y-3 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+              <div class="flex items-center justify-between">
+                <div>
+                  <label class="block font-bold text-slate-200 uppercase tracking-wider text-[11px]">Supported Currencies (World Currencies)</label>
+                  <p class="text-[10px] text-slate-400">Enable or disable currencies available to users on the platform</p>
+                </div>
+                <span id="currencies-count-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  9 Enabled
+                </span>
+              </div>
+
+              <!-- Quick Presets -->
+              <div class="flex flex-wrap gap-1.5 text-[10px]">
+                <button type="button" onclick="setCurrencySelection('all')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold border border-slate-700 transition">
+                  Select All (9)
+                </button>
+                <button type="button" onclick="setCurrencySelection('major')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold border border-slate-700 transition">
+                  Top 4 (INR, USD, EUR, GBP)
+                </button>
+                <button type="button" onclick="setCurrencySelection('inr_usd')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold border border-slate-700 transition">
+                  INR & USD Only
+                </button>
+              </div>
+
+              <!-- Currency Grid -->
+              <div class="grid grid-cols-3 gap-2" id="supported-currencies-grid">
+                <!-- Injected via JavaScript -->
+              </div>
+
+              <div class="pt-2 border-t border-slate-800">
+                <div class="flex items-center justify-between">
+                  <label class="block font-bold text-slate-200 uppercase tracking-wider text-[11px]">Default Display Currency</label>
+                  <span class="text-[10px] text-slate-400">Active for new visitors</span>
+                </div>
+                <select id="cfg-default_currency" onchange="updateLivePreview()" class="w-full mt-1.5 bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-slate-200 outline-none focus:border-emerald-500 font-bold transition">
+                  <!-- Populated from enabled currencies -->
                 </select>
               </div>
             </div>
@@ -744,6 +778,114 @@
       amber: { label: 'Amber Gold Active', border: 'border-amber-500', text: 'text-amber-400' },
     };
 
+    // World Currencies Catalog
+    const ALL_CURRENCIES = [
+      { code: 'INR', symbol: '₹', name: 'Indian Rupee', flag: '🇮🇳', locale: 'en-IN', defaultAmount: '₹ 50,00,000', defaultEmi: '₹ 42,918', defaultInt: '₹ 27.30 L', defaultTot: '₹ 77.30 L' },
+      { code: 'USD', symbol: '$', name: 'US Dollar', flag: '🇺🇸', locale: 'en-US', defaultAmount: '$ 500,000', defaultEmi: '$ 4,292', defaultInt: '$ 273,000', defaultTot: '$ 773,000' },
+      { code: 'EUR', symbol: '€', name: 'Euro', flag: '🇪🇺', locale: 'de-DE', defaultAmount: '€ 500,000', defaultEmi: '€ 4,292', defaultInt: '€ 273,000', defaultTot: '€ 773,000' },
+      { code: 'GBP', symbol: '£', name: 'British Pound', flag: '🇬🇧', locale: 'en-GB', defaultAmount: '£ 500,000', defaultEmi: '£ 4,292', defaultInt: '£ 273,000', defaultTot: '£ 773,000' },
+      { code: 'AED', symbol: 'د.إ', name: 'UAE Dirham', flag: '🇦🇪', locale: 'en-AE', defaultAmount: 'د.إ 500,000', defaultEmi: 'د.إ 4,292', defaultInt: 'د.إ 273,000', defaultTot: 'د.إ 773,000' },
+      { code: 'CAD', symbol: 'CA$', name: 'Canadian Dollar', flag: '🇨🇦', locale: 'en-CA', defaultAmount: 'CA$ 500,000', defaultEmi: 'CA$ 4,292', defaultInt: 'CA$ 273,000', defaultTot: 'CA$ 773,000' },
+      { code: 'AUD', symbol: 'A$', name: 'Australian Dollar', flag: '🇦🇺', locale: 'en-AU', defaultAmount: 'A$ 500,000', defaultEmi: 'A$ 4,292', defaultInt: 'A$ 273,000', defaultTot: 'A$ 773,000' },
+      { code: 'SGD', symbol: 'S$', name: 'Singapore Dollar', flag: '🇸🇬', locale: 'en-SG', defaultAmount: 'S$ 500,000', defaultEmi: 'S$ 4,292', defaultInt: 'S$ 273,000', defaultTot: 'S$ 773,000' },
+      { code: 'JPY', symbol: '¥', name: 'Japanese Yen', flag: '🇯🇵', locale: 'ja-JP', defaultAmount: '¥ 50,000,000', defaultEmi: '¥ 429,180', defaultInt: '¥ 27,300,000', defaultTot: '¥ 77,300,000' },
+    ];
+
+    function renderCurrencyGrid(activeCodes = []) {
+      const grid = document.getElementById('supported-currencies-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      ALL_CURRENCIES.forEach(c => {
+        const isChecked = activeCodes.includes(c.code);
+        const label = document.createElement('label');
+        label.className = `cursor-pointer border ${isChecked ? 'border-emerald-500/70 bg-slate-900' : 'border-slate-800 bg-slate-950'} hover:border-emerald-500 p-2 rounded-xl flex items-center gap-2 transition`;
+        label.id = `currency-tile-${c.code}`;
+        label.innerHTML = `
+          <input type="checkbox" value="${c.code}" class="currency-checkbox accent-emerald-500" onchange="onCurrencyCheckboxChanged()" ${isChecked ? 'checked' : ''}>
+          <span class="text-sm flex-shrink-0">${c.flag}</span>
+          <div class="truncate">
+            <div class="flex items-center gap-1">
+              <span class="font-extrabold text-slate-200 text-[11px]">${c.code}</span>
+              <span class="text-[10px] text-slate-400 font-bold">${c.symbol}</span>
+            </div>
+            <p class="text-[9px] text-slate-500 truncate leading-tight">${c.name}</p>
+          </div>
+        `;
+        grid.appendChild(label);
+      });
+
+      updateDefaultCurrencyOptions();
+    }
+
+    function onCurrencyCheckboxChanged() {
+      // Highlight cards
+      ALL_CURRENCIES.forEach(c => {
+        const tile = document.getElementById(`currency-tile-${c.code}`);
+        const cb = tile ? tile.querySelector('input') : null;
+        if (tile && cb) {
+          if (cb.checked) {
+            tile.className = 'cursor-pointer border border-emerald-500/70 bg-slate-900 p-2 rounded-xl flex items-center gap-2 transition';
+          } else {
+            tile.className = 'cursor-pointer border border-slate-800 bg-slate-950 p-2 rounded-xl flex items-center gap-2 transition hover:border-slate-700';
+          }
+        }
+      });
+
+      updateDefaultCurrencyOptions();
+      updateLivePreview();
+    }
+
+    function updateDefaultCurrencyOptions() {
+      const checkedBoxes = Array.from(document.querySelectorAll('.currency-checkbox:checked'));
+      const badge = document.getElementById('currencies-count-badge');
+      if (badge) badge.innerText = `${checkedBoxes.length} Enabled`;
+
+      const select = document.getElementById('cfg-default_currency');
+      if (!select) return;
+
+      const prevValue = select.value;
+      select.innerHTML = '';
+
+      if (checkedBoxes.length === 0) {
+        // Fallback to INR if nothing selected
+        const opt = document.createElement('option');
+        opt.value = 'INR';
+        opt.innerText = '₹ INR - Indian Rupee (Fallback)';
+        select.appendChild(opt);
+        return;
+      }
+
+      checkedBoxes.forEach(cb => {
+        const code = cb.value;
+        const c = ALL_CURRENCIES.find(x => x.code === code);
+        const opt = document.createElement('option');
+        opt.value = code;
+        opt.innerText = c ? `${c.flag} ${c.symbol} ${c.code} (${c.name})` : code;
+        select.appendChild(opt);
+      });
+
+      if (checkedBoxes.some(cb => cb.value === prevValue)) {
+        select.value = prevValue;
+      } else if (checkedBoxes.length > 0) {
+        select.value = checkedBoxes[0].value;
+      }
+    }
+
+    function setCurrencySelection(mode) {
+      const checkboxes = document.querySelectorAll('.currency-checkbox');
+      checkboxes.forEach(cb => {
+        if (mode === 'all') {
+          cb.checked = true;
+        } else if (mode === 'major') {
+          cb.checked = ['INR', 'USD', 'EUR', 'GBP'].includes(cb.value);
+        } else if (mode === 'inr_usd') {
+          cb.checked = ['INR', 'USD'].includes(cb.value);
+        }
+      });
+      onCurrencyCheckboxChanged();
+    }
+
     function onThemeChanged(theme) {
       const radio = document.querySelector(`input[name="brand_theme"][value="${theme}"]`);
       if (radio) radio.checked = true;
@@ -816,7 +958,10 @@
       const brandName = siteTitle.split(' - ')[0] || 'LoanPro';
       document.getElementById('mock-site-title').innerText = brandName;
       document.getElementById('mock-site-tagline').innerText = siteTagline;
-      document.getElementById('mock-currency-badge').innerText = (currency === 'USD') ? '$ USD' : '₹ INR';
+
+      // Currency lookup
+      const currObj = ALL_CURRENCIES.find(c => c.code === currency) || ALL_CURRENCIES[0];
+      document.getElementById('mock-currency-badge').innerText = `${currObj.flag} ${currObj.symbol} ${currObj.code}`;
 
       // 5. Update Metrics & Currency Values
       const mockLoanAmount = document.getElementById('mock-loan-amount');
@@ -824,17 +969,10 @@
       const mockInterest = document.getElementById('mock-interest');
       const mockTotal = document.getElementById('mock-total');
 
-      if (currency === 'USD') {
-        mockLoanAmount.innerText = '$ 500,000';
-        mockEmi.innerText = '$ 4,292';
-        mockInterest.innerText = '$ 273,000';
-        mockTotal.innerText = '$ 773,000';
-      } else {
-        mockLoanAmount.innerText = '₹ 50,00,000';
-        mockEmi.innerText = '₹ 42,918';
-        mockInterest.innerText = '₹ 27.30 L';
-        mockTotal.innerText = '₹ 77.30 L';
-      }
+      mockLoanAmount.innerText = currObj.defaultAmount;
+      mockEmi.innerText = currObj.defaultEmi;
+      mockInterest.innerText = currObj.defaultInt;
+      mockTotal.innerText = currObj.defaultTot;
 
       // 6. Update Footer
       document.getElementById('mock-footer-title').innerText = brandName;
@@ -852,16 +990,30 @@
           if (s.site_tagline) document.getElementById('cfg-site_tagline').value = s.site_tagline;
           if (s.announcement_banner) document.getElementById('cfg-announcement_banner').value = s.announcement_banner;
           if (s.footer_disclaimer) document.getElementById('cfg-footer_disclaimer').value = s.footer_disclaimer;
-          if (s.default_currency) document.getElementById('cfg-default_currency').value = s.default_currency;
           document.getElementById('cfg-banner_enabled').checked = (s.banner_enabled === 'true');
 
           if (s.brand_theme) {
             const radio = document.querySelector(`input[name="brand_theme"][value="${s.brand_theme}"]`);
             if (radio) radio.checked = true;
           }
+
+          // Currencies
+          const supported = (s.supported_currencies || 'INR,USD,EUR,GBP,AED,CAD,AUD,SGD,JPY')
+            .split(',')
+            .map(x => x.trim())
+            .filter(Boolean);
+
+          renderCurrencyGrid(supported);
+
+          if (s.default_currency) {
+            document.getElementById('cfg-default_currency').value = s.default_currency;
+          }
+        } else {
+          renderCurrencyGrid(['INR', 'USD', 'EUR', 'GBP', 'AED', 'CAD', 'AUD', 'SGD', 'JPY']);
         }
       } catch (err) {
         console.error('Failed to load settings:', err);
+        renderCurrencyGrid(['INR', 'USD', 'EUR', 'GBP', 'AED', 'CAD', 'AUD', 'SGD', 'JPY']);
       } finally {
         updateLivePreview();
       }
@@ -875,6 +1027,9 @@
 
       try {
         const themeRadio = document.querySelector('input[name="brand_theme"]:checked');
+        const checkedBoxes = Array.from(document.querySelectorAll('.currency-checkbox:checked'));
+        const supported = checkedBoxes.map(cb => cb.value).join(',');
+
         const payload = {
           site_title: document.getElementById('cfg-site_title').value,
           site_tagline: document.getElementById('cfg-site_tagline').value,
@@ -882,6 +1037,7 @@
           banner_enabled: document.getElementById('cfg-banner_enabled').checked ? 'true' : 'false',
           footer_disclaimer: document.getElementById('cfg-footer_disclaimer').value,
           default_currency: document.getElementById('cfg-default_currency').value,
+          supported_currencies: supported || 'INR,USD',
           brand_theme: themeRadio ? themeRadio.value : 'emerald'
         };
 

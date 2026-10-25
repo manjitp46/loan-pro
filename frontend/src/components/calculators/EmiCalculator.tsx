@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { CurrencyType, EmiCalculationResult, LoanPreset, LoanType } from '../../types';
 import { ClientCalculatorEngine } from '../../utils/calculatorEngine';
-import { formatCurrency, formatPercent, formatTenure } from '../../utils/formatters';
+import { formatCurrency, formatPercent, formatTenure, getCurrencySymbol } from '../../utils/formatters';
 import { PrincipalInterestDonut } from '../charts/PrincipalInterestDonut';
 import { AmortizationBarChart } from '../charts/AmortizationBarChart';
 import { BalanceScheduleAreaChart } from '../charts/BalanceScheduleAreaChart';
@@ -144,7 +144,7 @@ export const EmiCalculator: React.FC<EmiCalculatorProps> = ({ currency, presets,
                 {downPaymentPercent > 0 ? 'Total Asset / Purchase Value' : 'Loan Amount'}
               </label>
               <div className="flex items-center gap-1 bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1 focus-within:border-emerald-500">
-                <span className="text-xs font-bold text-slate-400">{currency === 'INR' ? '₹' : '$'}</span>
+                <span className="text-xs font-bold text-slate-400">{getCurrencySymbol(currency)}</span>
                 <input
                   type="number"
                   value={assetValue}
@@ -157,7 +157,7 @@ export const EmiCalculator: React.FC<EmiCalculatorProps> = ({ currency, presets,
             <input
               type="range"
               min="50000"
-              max={currency === 'INR' ? '50000000' : '2000000'}
+              max={currency === 'INR' ? '50000000' : (currency === 'JPY' ? '200000000' : '2000000')}
               step="25000"
               value={assetValue}
               onChange={(e) => setAssetValue(Number(e.target.value))}
@@ -168,6 +168,8 @@ export const EmiCalculator: React.FC<EmiCalculatorProps> = ({ currency, presets,
             <div className="flex flex-wrap gap-1.5 pt-1">
               {(currency === 'INR'
                 ? [1000000, 2500000, 5000000, 7500000, 10000000]
+                : currency === 'JPY'
+                ? [5000000, 15000000, 30000000, 50000000, 100000000]
                 : [50000, 150000, 300000, 500000, 1000000]
               ).map((val) => (
                 <button

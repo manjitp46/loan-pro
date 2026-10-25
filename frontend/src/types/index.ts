@@ -1,4 +1,14 @@
-export type CurrencyType = 'INR' | 'USD';
+export type CurrencyType =
+  | 'INR'
+  | 'USD'
+  | 'EUR'
+  | 'GBP'
+  | 'AED'
+  | 'CAD'
+  | 'AUD'
+  | 'SGD'
+  | 'JPY'
+  | string;
 
 export type LoanType = 'home' | 'personal' | 'car' | 'education' | 'business';
 

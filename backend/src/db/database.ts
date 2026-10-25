@@ -68,6 +68,13 @@ export function initDatabase() {
   const settingsCount = db.prepare('SELECT count(*) as count FROM site_settings').get() as { count: number };
   if (settingsCount.count === 0) {
     seedDefaultSettings();
+  } else {
+    // Ensure new setting keys exist in older databases
+    const now = new Date().toISOString();
+    db.prepare(`
+      INSERT OR IGNORE INTO site_settings (key, value, updated_at)
+      VALUES ('supported_currencies', 'INR,USD,EUR,GBP,AED,CAD,AUD,SGD,JPY', ?)
+    `).run(now);
   }
 }
 
@@ -81,6 +88,7 @@ function seedDefaultSettings() {
     site_tagline: 'Institutional-Grade EMI & Loan Comparison Engine',
     brand_theme: 'emerald',
     default_currency: 'INR',
+    supported_currencies: 'INR,USD,EUR,GBP,AED,CAD,AUD,SGD,JPY',
     announcement_banner: 'Special 2026 Festive Home Loan Rates: Starting from 8.35% p.a.! Compare offers today.',
     banner_enabled: 'true',
     contact_email: 'support@loanpro.local',

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Calculator,
   GitCompare,
@@ -7,10 +7,11 @@ import {
   UserCheck,
   Percent,
   Bookmark,
-  DollarSign,
-  IndianRupee,
+  ChevronDown,
+  Globe,
 } from 'lucide-react';
 import { CurrencyType } from '../../types';
+import { CURRENCY_CATALOG, getCurrencyConfig } from '../../utils/formatters';
 
 interface NavbarProps {
   activeTab: string;
@@ -20,6 +21,7 @@ interface NavbarProps {
   onOpenSaved: () => void;
   siteTitle?: string;
   brandTheme?: string;
+  supportedCurrencies?: string[];
 }
 
 const THEME_CLASSES: Record<string, {
@@ -95,9 +97,30 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenSaved,
   siteTitle,
   brandTheme = 'emerald',
+  supportedCurrencies,
 }) => {
+  const [isCurrencyMenuOpen, setIsCurrencyMenuOpen] = useState(false);
+  const currencyMenuRef = useRef<HTMLDivElement>(null);
+
   const currentTheme = THEME_CLASSES[brandTheme] || THEME_CLASSES.emerald;
   const brandName = siteTitle ? siteTitle.split(' - ')[0] : 'LoanPro';
+
+  const enabledCurrencies = (supportedCurrencies && supportedCurrencies.length > 0)
+    ? supportedCurrencies
+    : Object.keys(CURRENCY_CATALOG);
+
+  const activeConfig = getCurrencyConfig(currency);
+
+  // Close currency dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (currencyMenuRef.current && !currencyMenuRef.current.contains(event.target as Node)) {
+        setIsCurrencyMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const tabs = [
     { id: 'emi', label: 'EMI Calculator', icon: Calculator },
@@ -129,33 +152,79 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Controls: Currency switch & Saved calculations */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Currency switcher */}
-            <div className="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200">
-              <button
-                onClick={() => setCurrency('INR')}
-                className={`flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-md transition-all ${
-                  currency === 'INR'
-                    ? `bg-white ${currentTheme.currencyActive} shadow-xs`
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-                title="Indian Rupee (₹)"
-              >
-                <IndianRupee className="w-3.5 h-3.5" />
-                <span>INR</span>
-              </button>
-              <button
-                onClick={() => setCurrency('USD')}
-                className={`flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-md transition-all ${
-                  currency === 'USD'
-                    ? `bg-white ${currentTheme.currencyActive} shadow-xs`
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-                title="US Dollar ($)"
-              >
-                <DollarSign className="w-3.5 h-3.5" />
-                <span>USD</span>
-              </button>
-            </div>
+            {/* Currency Switcher */}
+            {enabledCurrencies.length <= 3 ? (
+              /* Segmented buttons for 2-3 currencies */
+              <div className="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200">
+                {enabledCurrencies.map((cCode) => {
+                  const cCfg = getCurrencyConfig(cCode);
+                  const isSelected = currency === cCode;
+                  return (
+                    <button
+                      key={cCode}
+                      onClick={() => setCurrency(cCode)}
+                      className={`flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-md transition-all ${
+                        isSelected
+                          ? `bg-white ${currentTheme.currencyActive} shadow-xs`
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                      title={`${cCfg.name} (${cCfg.symbol})`}
+                    >
+                      <span>{cCfg.symbol}</span>
+                      <span>{cCode}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              /* Modern Dropdown for 4+ currencies */
+              <div className="relative" ref={currencyMenuRef}>
+                <button
+                  onClick={() => setIsCurrencyMenuOpen(!isCurrencyMenuOpen)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-slate-800 transition shadow-xs"
+                  title="Change Currency"
+                >
+                  <span className="text-sm leading-none">{activeConfig.flag}</span>
+                  <span className="font-extrabold">{activeConfig.symbol} {currency}</span>
+                  <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${isCurrencyMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {isCurrencyMenuOpen && (
+                  <div className="absolute right-0 mt-1.5 w-60 bg-white border border-slate-200 rounded-xl shadow-2xl z-50 py-1.5 max-h-72 overflow-y-auto">
+                    <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 flex items-center justify-between">
+                      <span>Supported Currencies</span>
+                      <span className="px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 font-extrabold">{enabledCurrencies.length}</span>
+                    </div>
+                    {enabledCurrencies.map((cCode) => {
+                      const cCfg = getCurrencyConfig(cCode);
+                      const isSelected = currency === cCode;
+                      return (
+                        <button
+                          key={cCode}
+                          onClick={() => {
+                            setCurrency(cCode);
+                            setIsCurrencyMenuOpen(false);
+                          }}
+                          className={`w-full px-3 py-2 text-left text-xs flex items-center justify-between transition hover:bg-slate-50 ${
+                            isSelected ? 'bg-emerald-50/70 font-bold text-emerald-800' : 'text-slate-700'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5 truncate">
+                            <span className="text-base">{cCfg.flag}</span>
+                            <div className="truncate">
+                              <span className="font-black text-slate-900">{cCode}</span>
+                              <span className="text-slate-400 text-[11px] ml-1">({cCfg.symbol})</span>
+                              <p className="text-[10px] text-slate-500 truncate">{cCfg.name}</p>
+                            </div>
+                          </div>
+                          {isSelected && <span className="text-emerald-600 font-black text-sm ml-2">✓</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Saved calculations modal trigger */}
             <button
