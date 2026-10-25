@@ -49,7 +49,7 @@ app.get('/', (req, res) => {
   });
 });
 
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test' && !process.env.JEST_WORKER_ID) {
   app.listen(PORT, () => {
     console.log(`🚀 Loan Tool Backend server running on port ${PORT}`);
   });

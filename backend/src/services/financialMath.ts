@@ -125,14 +125,15 @@ export class FinancialMath {
       const interestForMonth = this.round(beginningBalance * monthlyRate);
       let principalForMonth = this.round(currentEmi - interestForMonth);
 
-      if (principalForMonth > beginningBalance) {
+      // In the final scheduled month, principal absorbs remaining balance
+      if (month === tenureMonths || principalForMonth > beginningBalance) {
         principalForMonth = beginningBalance;
       }
 
       const extraPrepayment = prepaymentMap?.get(month) || 0;
       const actualPrepayment = Math.min(extraPrepayment, Math.max(0, beginningBalance - principalForMonth));
 
-      const endingBalance = this.round(Math.max(0, beginningBalance - principalForMonth - actualPrepayment));
+      const endingBalance = month === tenureMonths ? 0 : this.round(Math.max(0, beginningBalance - principalForMonth - actualPrepayment));
       const totalMonthPayment = this.round(principalForMonth + interestForMonth + actualPrepayment);
 
       cumulativePrincipal = this.round(cumulativePrincipal + principalForMonth);
