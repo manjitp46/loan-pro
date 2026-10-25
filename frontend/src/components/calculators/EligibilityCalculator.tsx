@@ -3,6 +3,7 @@ import { UserCheck, ShieldAlert, CheckCircle2, AlertCircle, Info, Sparkles, Shar
 import { CurrencyType, LoanEligibilityResult, LoanType } from '../../types';
 import { ClientCalculatorEngine } from '../../utils/calculatorEngine';
 import { formatCurrency, formatPercent, getCurrencySymbol } from '../../utils/formatters';
+import { NumericInput } from '../common/NumericInput';
 
 interface EligibilityProps {
   currency: CurrencyType;
@@ -77,12 +78,12 @@ export const EligibilityCalculator: React.FC<EligibilityProps> = ({ currency, on
               <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                 Net Monthly Take-Home Income
               </label>
-              <div className="flex items-center bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1">
+              <div className="flex items-center bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1 focus-within:border-emerald-500">
                 <span className="font-bold text-slate-400 mr-1">{getCurrencySymbol(currency)}</span>
-                <input
-                  type="number"
+                <NumericInput
+                  min={0}
                   value={monthlyIncome}
-                  onChange={(e) => setMonthlyIncome(Math.max(0, Number(e.target.value)))}
+                  onChange={setMonthlyIncome}
                   className="w-32 text-right text-sm font-bold bg-transparent text-slate-900 outline-none"
                 />
               </div>
@@ -105,12 +106,12 @@ export const EligibilityCalculator: React.FC<EligibilityProps> = ({ currency, on
               <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                 Existing Monthly Obligations (Car, Personal, Cards)
               </label>
-              <div className="flex items-center bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1">
+              <div className="flex items-center bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1 focus-within:border-emerald-500">
                 <span className="font-bold text-slate-400 mr-1">{getCurrencySymbol(currency)}</span>
-                <input
-                  type="number"
+                <NumericInput
+                  min={0}
                   value={existingEmi}
-                  onChange={(e) => setExistingEmi(Math.max(0, Number(e.target.value)))}
+                  onChange={setExistingEmi}
                   className="w-28 text-right text-sm font-bold bg-transparent text-slate-900 outline-none"
                 />
               </div>
@@ -131,22 +132,24 @@ export const EligibilityCalculator: React.FC<EligibilityProps> = ({ currency, on
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-bold text-slate-600 uppercase">Expected Interest Rate (% p.a.)</label>
-              <input
-                type="number"
+              <NumericInput
                 step="0.1"
+                min={0}
+                max={30}
                 value={annualRate}
-                onChange={(e) => setAnnualRate(Number(e.target.value))}
-                className="w-full text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 outline-none"
+                onChange={setAnnualRate}
+                className="w-full text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 outline-none focus:border-emerald-500"
               />
             </div>
 
             <div>
               <label className="text-xs font-bold text-slate-600 uppercase">Desired Tenure (Years)</label>
-              <input
-                type="number"
+              <NumericInput
+                min={1}
+                max={35}
                 value={tenureYears}
-                onChange={(e) => setTenureYears(Number(e.target.value))}
-                className="w-full text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 outline-none"
+                onChange={setTenureYears}
+                className="w-full text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 outline-none focus:border-emerald-500"
               />
             </div>
           </div>

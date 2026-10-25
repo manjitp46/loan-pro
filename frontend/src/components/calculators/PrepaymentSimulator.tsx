@@ -3,6 +3,7 @@ import { TrendingDown, Calendar, Plus, Trash2, Clock, CheckCircle, Sparkles, Sha
 import { CurrencyType, LumpSumPrepayment, PrepaymentSimulationResult } from '../../types';
 import { ClientCalculatorEngine } from '../../utils/calculatorEngine';
 import { formatCurrency, formatPercent, formatTenure, getCurrencySymbol } from '../../utils/formatters';
+import { NumericInput } from '../common/NumericInput';
 import { AmortizationTable } from '../schedule/AmortizationTable';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
 
@@ -175,12 +176,12 @@ export const PrepaymentSimulator: React.FC<PrepaymentProps> = ({ currency, onSav
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className="text-xs font-bold text-slate-600 uppercase">Loan Amount</label>
-              <div className="flex items-center bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1">
+              <div className="flex items-center bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 focus-within:border-emerald-500">
                 <span className="font-bold text-slate-400 mr-1">{getCurrencySymbol(currency)}</span>
-                <input
-                  type="number"
+                <NumericInput
+                  min={0}
                   value={principal}
-                  onChange={(e) => setPrincipal(Number(e.target.value))}
+                  onChange={setPrincipal}
                   className="w-full text-sm font-bold bg-transparent text-slate-900 outline-none"
                 />
               </div>
@@ -188,22 +189,24 @@ export const PrepaymentSimulator: React.FC<PrepaymentProps> = ({ currency, onSav
 
             <div>
               <label className="text-xs font-bold text-slate-600 uppercase">Rate (% p.a.)</label>
-              <input
-                type="number"
+              <NumericInput
                 step="0.1"
+                min={0}
+                max={30}
                 value={annualRate}
-                onChange={(e) => setAnnualRate(Number(e.target.value))}
-                className="w-full text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 outline-none"
+                onChange={setAnnualRate}
+                className="w-full text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 outline-none focus:border-emerald-500"
               />
             </div>
 
             <div>
               <label className="text-xs font-bold text-slate-600 uppercase">Tenure (Years)</label>
-              <input
-                type="number"
+              <NumericInput
+                min={1}
+                max={35}
                 value={tenureYears}
-                onChange={(e) => setTenureYears(Number(e.target.value))}
-                className="w-full text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 outline-none"
+                onChange={setTenureYears}
+                className="w-full text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 outline-none focus:border-emerald-500"
               />
             </div>
           </div>
@@ -215,12 +218,12 @@ export const PrepaymentSimulator: React.FC<PrepaymentProps> = ({ currency, onSav
                 <span className="text-xs font-bold text-slate-800 uppercase">Extra Monthly Payment</span>
                 <p className="text-[11px] text-slate-500">Added on top of every scheduled monthly EMI</p>
               </div>
-              <div className="flex items-center bg-white border border-slate-300 rounded-lg px-2.5 py-1">
+              <div className="flex items-center bg-white border border-slate-300 rounded-lg px-2.5 py-1 focus-within:border-emerald-500">
                 <span className="font-bold text-slate-400 mr-1">{getCurrencySymbol(currency)}</span>
-                <input
-                  type="number"
+                <NumericInput
+                  min={0}
                   value={extraMonthly}
-                  onChange={(e) => setExtraMonthly(Math.max(0, Number(e.target.value)))}
+                  onChange={setExtraMonthly}
                   className="w-24 text-right text-sm font-bold bg-transparent text-slate-900 outline-none"
                 />
               </div>
@@ -244,12 +247,12 @@ export const PrepaymentSimulator: React.FC<PrepaymentProps> = ({ currency, onSav
                 <span className="text-xs font-bold text-slate-800 uppercase">Annual Lump-Sum Prepayment</span>
                 <p className="text-[11px] text-slate-500">Paid once every 12 months (e.g. annual bonus / extra EMI)</p>
               </div>
-              <div className="flex items-center bg-white border border-slate-300 rounded-lg px-2.5 py-1">
+              <div className="flex items-center bg-white border border-slate-300 rounded-lg px-2.5 py-1 focus-within:border-emerald-500">
                 <span className="font-bold text-slate-400 mr-1">{getCurrencySymbol(currency)}</span>
-                <input
-                  type="number"
+                <NumericInput
+                  min={0}
                   value={annualPrepay}
-                  onChange={(e) => setAnnualPrepay(Math.max(0, Number(e.target.value)))}
+                  onChange={setAnnualPrepay}
                   className="w-28 text-right text-sm font-bold bg-transparent text-slate-900 outline-none"
                 />
               </div>
@@ -289,22 +292,21 @@ export const PrepaymentSimulator: React.FC<PrepaymentProps> = ({ currency, onSav
 
                   <div className="flex items-center gap-1">
                     <span className="text-xs text-slate-500">At Month:</span>
-                    <input
-                      type="number"
-                      min="1"
+                    <NumericInput
+                      min={1}
                       max={tenureMonths}
                       value={ls.month}
-                      onChange={(e) => updateLumpSum(ls.id, 'month', Number(e.target.value))}
-                      className="w-16 text-center text-xs font-bold bg-white border border-slate-300 rounded px-1.5 py-1 outline-none"
+                      onChange={(val) => updateLumpSum(ls.id, 'month', val)}
+                      className="w-16 text-center text-xs font-bold bg-white border border-slate-300 rounded px-1.5 py-1 outline-none focus:border-emerald-500"
                     />
                   </div>
 
-                  <div className="flex-1 flex items-center gap-1 bg-white border border-slate-300 rounded px-2 py-1">
+                  <div className="flex-1 flex items-center gap-1 bg-white border border-slate-300 rounded px-2 py-1 focus-within:border-emerald-500">
                     <span className="text-xs font-bold text-slate-400">{getCurrencySymbol(currency)}</span>
-                    <input
-                      type="number"
+                    <NumericInput
+                      min={0}
                       value={ls.amount}
-                      onChange={(e) => updateLumpSum(ls.id, 'amount', Number(e.target.value))}
+                      onChange={(val) => updateLumpSum(ls.id, 'amount', val)}
                       className="w-full text-xs font-bold bg-transparent text-slate-800 outline-none"
                     />
                   </div>

@@ -15,6 +15,7 @@ import {
 import { CurrencyType, EmiCalculationResult, LoanPreset, LoanType } from '../../types';
 import { ClientCalculatorEngine } from '../../utils/calculatorEngine';
 import { formatCurrency, formatPercent, formatTenure, getCurrencySymbol } from '../../utils/formatters';
+import { NumericInput } from '../common/NumericInput';
 import { PrincipalInterestDonut } from '../charts/PrincipalInterestDonut';
 import { AmortizationBarChart } from '../charts/AmortizationBarChart';
 import { BalanceScheduleAreaChart } from '../charts/BalanceScheduleAreaChart';
@@ -145,10 +146,10 @@ export const EmiCalculator: React.FC<EmiCalculatorProps> = ({ currency, presets,
               </label>
               <div className="flex items-center gap-1 bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1 focus-within:border-emerald-500">
                 <span className="text-xs font-bold text-slate-400">{getCurrencySymbol(currency)}</span>
-                <input
-                  type="number"
+                <NumericInput
+                  min={0}
                   value={assetValue}
-                  onChange={(e) => setAssetValue(Math.max(0, Number(e.target.value)))}
+                  onChange={setAssetValue}
                   className="w-32 text-right text-sm font-bold bg-transparent text-slate-900 outline-none"
                 />
               </div>
@@ -195,12 +196,11 @@ export const EmiCalculator: React.FC<EmiCalculatorProps> = ({ currency, presets,
                 </span>
               </div>
               <div className="flex items-center gap-1 bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1 focus-within:border-emerald-500">
-                <input
-                  type="number"
-                  min="0"
-                  max="90"
+                <NumericInput
+                  min={0}
+                  max={90}
                   value={downPaymentPercent}
-                  onChange={(e) => setDownPaymentPercent(Math.min(90, Math.max(0, Number(e.target.value))))}
+                  onChange={(val) => setDownPaymentPercent(Math.min(90, Math.max(0, val)))}
                   className="w-14 text-right text-sm font-bold bg-transparent text-slate-900 outline-none"
                 />
                 <span className="text-xs font-bold text-slate-400">%</span>
@@ -230,13 +230,12 @@ export const EmiCalculator: React.FC<EmiCalculatorProps> = ({ currency, presets,
                 Interest Rate (p.a.)
               </label>
               <div className="flex items-center gap-1 bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1 focus-within:border-emerald-500">
-                <input
-                  type="number"
+                <NumericInput
                   step="0.05"
-                  min="1"
-                  max="30"
+                  min={0.1}
+                  max={30}
                   value={annualRate}
-                  onChange={(e) => setAnnualRate(Math.min(30, Math.max(0.1, Number(e.target.value))))}
+                  onChange={(val) => setAnnualRate(Math.min(30, Math.max(0, val)))}
                   className="w-16 text-right text-sm font-bold bg-transparent text-slate-900 outline-none"
                 />
                 <span className="text-xs font-bold text-slate-400">%</span>
@@ -289,13 +288,11 @@ export const EmiCalculator: React.FC<EmiCalculatorProps> = ({ currency, presets,
                 </div>
 
                 <div className="flex items-center gap-1 bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1 focus-within:border-emerald-500">
-                  <input
-                    type="number"
-                    min="1"
+                  <NumericInput
+                    min={1}
                     max={tenureUnit === 'years' ? 35 : 420}
                     value={tenureUnit === 'years' ? tenureYears : tenureMonthsDirect}
-                    onChange={(e) => {
-                      const val = Number(e.target.value);
+                    onChange={(val) => {
                       if (tenureUnit === 'years') {
                         setTenureYears(val);
                         setTenureMonthsDirect(val * 12);
@@ -348,14 +345,13 @@ export const EmiCalculator: React.FC<EmiCalculatorProps> = ({ currency, presets,
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3 pt-2">
                 <div>
                   <label className="text-[11px] font-bold text-slate-600 uppercase">Processing Fee (%)</label>
-                  <div className="flex items-center gap-1 bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1 mt-1">
-                    <input
-                      type="number"
+                  <div className="flex items-center gap-1 bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1 mt-1 focus-within:border-emerald-500">
+                    <NumericInput
                       step="0.1"
-                      min="0"
-                      max="5"
+                      min={0}
+                      max={10}
                       value={processingFeePercent}
-                      onChange={(e) => setProcessingFeePercent(Number(e.target.value))}
+                      onChange={setProcessingFeePercent}
                       className="w-full text-sm font-semibold bg-transparent text-slate-800 outline-none"
                     />
                     <span className="text-xs text-slate-400">%</span>
@@ -364,13 +360,12 @@ export const EmiCalculator: React.FC<EmiCalculatorProps> = ({ currency, presets,
 
                 <div>
                   <label className="text-[11px] font-bold text-slate-600 uppercase">Tax on Fee (GST %)</label>
-                  <div className="flex items-center gap-1 bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1 mt-1">
-                    <input
-                      type="number"
-                      min="0"
-                      max="30"
+                  <div className="flex items-center gap-1 bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1 mt-1 focus-within:border-emerald-500">
+                    <NumericInput
+                      min={0}
+                      max={30}
                       value={taxPercent}
-                      onChange={(e) => setTaxPercent(Number(e.target.value))}
+                      onChange={setTaxPercent}
                       className="w-full text-sm font-semibold bg-transparent text-slate-800 outline-none"
                     />
                     <span className="text-xs text-slate-400">%</span>

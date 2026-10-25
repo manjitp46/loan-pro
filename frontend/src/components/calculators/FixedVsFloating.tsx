@@ -3,6 +3,7 @@ import { Plus, Trash2, Percent, TrendingUp, TrendingDown, ArrowRight, Share2 } f
 import { CurrencyType } from '../../types';
 import { ClientCalculatorEngine } from '../../utils/calculatorEngine';
 import { formatCurrency, formatPercent, formatTenure, getCurrencySymbol } from '../../utils/formatters';
+import { NumericInput } from '../common/NumericInput';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
 
 interface FixedVsFloatingProps {
@@ -131,12 +132,12 @@ export const FixedVsFloating: React.FC<FixedVsFloatingProps> = ({ currency, onSa
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className="text-xs font-semibold text-slate-600">Principal</label>
-              <div className="flex items-center bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1">
+              <div className="flex items-center bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 focus-within:border-emerald-500">
                 <span className="font-bold text-slate-400 mr-1">{getCurrencySymbol(currency)}</span>
-                <input
-                  type="number"
+                <NumericInput
+                  min={0}
                   value={principal}
-                  onChange={(e) => setPrincipal(Number(e.target.value))}
+                  onChange={setPrincipal}
                   className="w-full text-sm font-bold bg-transparent text-slate-900 outline-none"
                 />
               </div>
@@ -144,23 +145,25 @@ export const FixedVsFloating: React.FC<FixedVsFloatingProps> = ({ currency, onSa
 
             <div>
               <label className="text-xs font-semibold text-slate-600">Fixed Rate (% p.a.)</label>
-              <input
-                type="number"
+              <NumericInput
                 step="0.1"
+                min={0}
+                max={30}
                 value={fixedRate}
-                onChange={(e) => setFixedRate(Number(e.target.value))}
-                className="w-full text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 outline-none"
+                onChange={setFixedRate}
+                className="w-full text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 outline-none focus:border-emerald-500"
               />
             </div>
 
             <div>
               <label className="text-xs font-semibold text-slate-600">Initial Floating Rate (%)</label>
-              <input
-                type="number"
+              <NumericInput
                 step="0.1"
+                min={0}
+                max={30}
                 value={initialFloatingRate}
-                onChange={(e) => setInitialFloatingRate(Number(e.target.value))}
-                className="w-full text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 outline-none"
+                onChange={setInitialFloatingRate}
+                className="w-full text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 outline-none focus:border-emerald-500"
               />
             </div>
           </div>
@@ -187,22 +190,22 @@ export const FixedVsFloating: React.FC<FixedVsFloatingProps> = ({ currency, onSa
                   <span className="text-xs font-bold text-slate-500 w-6">#{idx + 1}</span>
                   <div className="flex items-center gap-1">
                     <span className="text-xs text-slate-500">At Month:</span>
-                    <input
-                      type="number"
+                    <NumericInput
+                      min={1}
                       value={p.month}
-                      onChange={(e) => updateRatePoint(p.id, 'month', Number(e.target.value))}
-                      className="w-16 text-center text-xs font-bold bg-white border border-slate-300 rounded px-1.5 py-1 outline-none"
+                      onChange={(val) => updateRatePoint(p.id, 'month', val)}
+                      className="w-16 text-center text-xs font-bold bg-white border border-slate-300 rounded px-1.5 py-1 outline-none focus:border-emerald-500"
                     />
                     <span className="text-[11px] text-slate-400 font-medium">({Math.round(p.month / 12)} Yrs)</span>
                   </div>
 
-                  <div className="flex-1 flex items-center gap-1 bg-white border border-slate-300 rounded px-2 py-1">
+                  <div className="flex-1 flex items-center gap-1 bg-white border border-slate-300 rounded px-2 py-1 focus-within:border-emerald-500">
                     <span className="text-xs text-slate-500">New Rate:</span>
-                    <input
-                      type="number"
+                    <NumericInput
                       step="0.1"
+                      min={0}
                       value={p.newRate}
-                      onChange={(e) => updateRatePoint(p.id, 'newRate', Number(e.target.value))}
+                      onChange={(val) => updateRatePoint(p.id, 'newRate', val)}
                       className="w-16 text-center text-xs font-bold bg-transparent text-slate-800 outline-none"
                     />
                     <span className="text-xs font-bold text-slate-400">%</span>

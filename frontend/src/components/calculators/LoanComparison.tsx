@@ -3,6 +3,7 @@ import { Plus, Trash2, Award, TrendingDown, ArrowDownRight, FileText, Share2, Ch
 import { CurrencyType, LoanComparisonResult, LoanOfferItem } from '../../types';
 import { ClientCalculatorEngine } from '../../utils/calculatorEngine';
 import { formatCurrency, formatPercent, getCurrencySymbol } from '../../utils/formatters';
+import { NumericInput } from '../common/NumericInput';
 import { exportComparisonToPdf } from '../../utils/exportUtils';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
 
@@ -192,12 +193,12 @@ export const LoanComparison: React.FC<ComparisonProps> = ({ currency, onSaveShar
                 <div className="space-y-2.5 text-xs">
                   <div>
                     <label className="text-slate-500 font-medium">Loan Amount</label>
-                    <div className="flex items-center bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 mt-0.5">
+                    <div className="flex items-center bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 mt-0.5 focus-within:border-emerald-500">
                       <span className="font-bold text-slate-400 mr-1">{getCurrencySymbol(currency)}</span>
-                      <input
-                        type="number"
+                      <NumericInput
+                        min={0}
                         value={orig?.principal || offer.principal}
-                        onChange={(e) => updateOffer(offer.id, 'principal', Number(e.target.value))}
+                        onChange={(val) => updateOffer(offer.id, 'principal', val)}
                         className="w-full font-bold text-slate-800 bg-transparent outline-none"
                       />
                     </div>
@@ -206,21 +207,23 @@ export const LoanComparison: React.FC<ComparisonProps> = ({ currency, onSaveShar
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <label className="text-slate-500 font-medium">Rate (% p.a.)</label>
-                      <input
-                        type="number"
+                      <NumericInput
                         step="0.05"
+                        min={0}
+                        max={30}
                         value={orig?.annualRate || offer.annualRate}
-                        onChange={(e) => updateOffer(offer.id, 'annualRate', Number(e.target.value))}
-                        className="w-full font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 mt-0.5 outline-none"
+                        onChange={(val) => updateOffer(offer.id, 'annualRate', val)}
+                        className="w-full font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 mt-0.5 outline-none focus:border-emerald-500"
                       />
                     </div>
                     <div>
                       <label className="text-slate-500 font-medium">Tenure (Years)</label>
-                      <input
-                        type="number"
+                      <NumericInput
+                        min={1}
+                        max={35}
                         value={Math.round((orig?.tenureMonths || offer.tenureMonths) / 12)}
-                        onChange={(e) => updateOffer(offer.id, 'tenureMonths', Number(e.target.value) * 12)}
-                        className="w-full font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 mt-0.5 outline-none"
+                        onChange={(val) => updateOffer(offer.id, 'tenureMonths', val * 12)}
+                        className="w-full font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 mt-0.5 outline-none focus:border-emerald-500"
                       />
                     </div>
                   </div>
@@ -228,21 +231,22 @@ export const LoanComparison: React.FC<ComparisonProps> = ({ currency, onSaveShar
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <label className="text-slate-500 font-medium">Proc. Fee (%)</label>
-                      <input
-                        type="number"
+                      <NumericInput
                         step="0.1"
+                        min={0}
+                        max={10}
                         value={orig?.processingFeePercent ?? 0.5}
-                        onChange={(e) => updateOffer(offer.id, 'processingFeePercent', Number(e.target.value))}
-                        className="w-full font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 mt-0.5 outline-none"
+                        onChange={(val) => updateOffer(offer.id, 'processingFeePercent', val)}
+                        className="w-full font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 mt-0.5 outline-none focus:border-emerald-500"
                       />
                     </div>
                     <div>
                       <label className="text-slate-500 font-medium">Other Fees</label>
-                      <input
-                        type="number"
+                      <NumericInput
+                        min={0}
                         value={orig?.otherCharges ?? 0}
-                        onChange={(e) => updateOffer(offer.id, 'otherCharges', Number(e.target.value))}
-                        className="w-full font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 mt-0.5 outline-none"
+                        onChange={(val) => updateOffer(offer.id, 'otherCharges', val)}
+                        className="w-full font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 mt-0.5 outline-none focus:border-emerald-500"
                       />
                     </div>
                   </div>

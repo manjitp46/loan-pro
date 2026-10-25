@@ -3,6 +3,7 @@ import { ArrowRightLeft, CheckCircle, AlertTriangle, XCircle, TrendingDown, Cloc
 import { BalanceTransferResult, CurrencyType } from '../../types';
 import { ClientCalculatorEngine } from '../../utils/calculatorEngine';
 import { formatCurrency, formatPercent, formatTenure, getCurrencySymbol } from '../../utils/formatters';
+import { NumericInput } from '../common/NumericInput';
 
 interface TransferProps {
   currency: CurrencyType;
@@ -85,12 +86,12 @@ export const BalanceTransfer: React.FC<TransferProps> = ({ currency, onSaveShare
 
               <div>
                 <label className="text-xs font-semibold text-slate-600">Outstanding Principal</label>
-                <div className="flex items-center bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1">
+                <div className="flex items-center bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 focus-within:border-emerald-500">
                   <span className="font-bold text-slate-400 mr-1">{getCurrencySymbol(currency)}</span>
-                  <input
-                    type="number"
+                  <NumericInput
+                    min={0}
                     value={outstandingBalance}
-                    onChange={(e) => setOutstandingBalance(Number(e.target.value))}
+                    onChange={setOutstandingBalance}
                     className="w-full text-sm font-bold bg-transparent text-slate-900 outline-none"
                   />
                 </div>
@@ -98,23 +99,25 @@ export const BalanceTransfer: React.FC<TransferProps> = ({ currency, onSaveShare
 
               <div>
                 <label className="text-xs font-semibold text-slate-600">Current Interest Rate (% p.a.)</label>
-                <input
-                  type="number"
+                <NumericInput
                   step="0.1"
+                  min={0}
+                  max={30}
                   value={currentRate}
-                  onChange={(e) => setCurrentRate(Number(e.target.value))}
-                  className="w-full text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 outline-none"
+                  onChange={setCurrentRate}
+                  className="w-full text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 outline-none focus:border-emerald-500"
                 />
               </div>
 
               <div>
                 <label className="text-xs font-semibold text-slate-600">Remaining Tenure (Months)</label>
                 <div className="flex items-center gap-2 mt-1">
-                  <input
-                    type="number"
+                  <NumericInput
+                    min={1}
+                    max={420}
                     value={remainingTenureMonths}
-                    onChange={(e) => setRemainingTenureMonths(Number(e.target.value))}
-                    className="w-24 text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none"
+                    onChange={setRemainingTenureMonths}
+                    className="w-24 text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:border-emerald-500"
                   />
                   <span className="text-xs text-slate-500 font-medium">({formatTenure(remainingTenureMonths)})</span>
                 </div>
@@ -122,13 +125,13 @@ export const BalanceTransfer: React.FC<TransferProps> = ({ currency, onSaveShare
 
               <div>
                 <label className="text-xs font-semibold text-slate-600">Foreclosure Penalty (%)</label>
-                <input
-                  type="number"
+                <NumericInput
                   step="0.1"
-                  min="0"
+                  min={0}
+                  max={10}
                   value={foreclosurePenaltyPercent}
-                  onChange={(e) => setForeclosurePenaltyPercent(Number(e.target.value))}
-                  className="w-full text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 outline-none"
+                  onChange={setForeclosurePenaltyPercent}
+                  className="w-full text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 outline-none focus:border-emerald-500"
                 />
               </div>
             </div>
@@ -142,12 +145,13 @@ export const BalanceTransfer: React.FC<TransferProps> = ({ currency, onSaveShare
 
               <div>
                 <label className="text-xs font-semibold text-slate-600">New Interest Rate (% p.a.)</label>
-                <input
-                  type="number"
+                <NumericInput
                   step="0.05"
+                  min={0}
+                  max={30}
                   value={newRate}
-                  onChange={(e) => setNewRate(Number(e.target.value))}
-                  className="w-full text-sm font-bold bg-emerald-50/50 border border-emerald-300 rounded-lg px-2.5 py-1.5 mt-1 text-emerald-900 outline-none"
+                  onChange={setNewRate}
+                  className="w-full text-sm font-bold bg-emerald-50/50 border border-emerald-300 rounded-lg px-2.5 py-1.5 mt-1 text-emerald-900 outline-none focus:border-emerald-500"
                 />
                 <span className="text-[11px] text-emerald-600 font-semibold block mt-0.5">
                   {(currentRate - newRate).toFixed(2)}% rate reduction
@@ -157,11 +161,12 @@ export const BalanceTransfer: React.FC<TransferProps> = ({ currency, onSaveShare
               <div>
                 <label className="text-xs font-semibold text-slate-600">New Tenure (Months)</label>
                 <div className="flex items-center gap-2 mt-1">
-                  <input
-                    type="number"
+                  <NumericInput
+                    min={1}
+                    max={420}
                     value={newTenureMonths}
-                    onChange={(e) => setNewTenureMonths(Number(e.target.value))}
-                    className="w-24 text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none"
+                    onChange={setNewTenureMonths}
+                    className="w-24 text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:border-emerald-500"
                   />
                   <span className="text-xs text-slate-500 font-medium">({formatTenure(newTenureMonths)})</span>
                 </div>
@@ -169,13 +174,13 @@ export const BalanceTransfer: React.FC<TransferProps> = ({ currency, onSaveShare
 
               <div>
                 <label className="text-xs font-semibold text-slate-600">New Processing Fee (%)</label>
-                <input
-                  type="number"
+                <NumericInput
                   step="0.1"
-                  min="0"
+                  min={0}
+                  max={10}
                   value={newProcessingFeePercent}
-                  onChange={(e) => setNewProcessingFeePercent(Number(e.target.value))}
-                  className="w-full text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 outline-none"
+                  onChange={setNewProcessingFeePercent}
+                  className="w-full text-sm font-bold bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 mt-1 outline-none focus:border-emerald-500"
                 />
                 <span className="text-[11px] text-slate-400 block mt-0.5">
                   Upfront Fee: {formatCurrency(result.newLoan.processingFee, currency)}
