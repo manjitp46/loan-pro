@@ -13,6 +13,17 @@ export async function fetchPresets(): Promise<LoanPreset[]> {
   }
 }
 
+export async function fetchSettings(): Promise<Record<string, string>> {
+  try {
+    const res = await fetch(`${API_BASE}/settings`);
+    const data = await res.json();
+    return data.settings || {};
+  } catch (err) {
+    console.error('Failed to fetch site settings', err);
+    return {};
+  }
+}
+
 export async function saveCalculation(payload: {
   title: string;
   calculatorType: string;

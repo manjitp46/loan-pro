@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LoanPro Admin Console - Data & Appearance Management</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen antialiased flex flex-col">
+
+  <!-- Top Navigation Bar -->
+  <header class="border-b border-slate-800 bg-slate-950/80 sticky top-0 z-30 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-emerald-500/20">
+          ⚙️
+        </div>
+        <div>
+          <h1 class="text-base font-extrabold text-white tracking-tight flex items-center gap-2">
+            LoanPro Admin Console
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              LIGHTWEIGHT CONTAINER
+            </span>
+          </h1>
+          <p class="text-[11px] text-slate-400">Manage SQLite Database & Site Look and Feel</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="http://localhost:3000" target="_blank" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition shadow-sm">
+          <span>Open Main Site</span>
+          <span>↗</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex space-x-2 border-t border-slate-800/80 pt-1 pb-2 text-xs font-bold">
+      <button onclick="switchTab('theme')" id="tab-btn-theme" class="tab-btn px-3.5 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 transition">
+        🎨 Site Look & Feel
+      </button>
+      <button onclick="switchTab('presets')" id="tab-btn-presets" class="tab-btn px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-white transition">
+        📊 Loan Presets
+      </button>
+      <button onclick="switchTab('saved')" id="tab-btn-saved" class="tab-btn px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-white transition">
+        💾 Saved Calculations
+      </button>
+      <button onclick="switchTab('sql')" id="tab-btn-sql" class="tab-btn px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-white transition">
+        ⚡ SQL Console
+      </button>
+      <button onclick="switchTab('stats')" id="tab-btn-stats" class="tab-btn px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-white transition">
+        📈 Storage & Health
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 flex-1">
+
+    <!-- TAB 1: SITE LOOK AND FEEL -->
+    <section id="tab-theme" class="tab-content space-y-6">
+      <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-xl">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+          <div>
+            <h2 class="text-lg font-bold text-white">Site Appearance & Theme Customization</h2>
+            <p class="text-xs text-slate-400 mt-0.5">Control the public platform's brand title, color palette, announcements, and defaults</p>
+          </div>
+          <button onclick="saveSettings()" class="px-4 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-lg transition">
+            Save Look & Feel
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+          <!-- Theme Palette Selector -->
+          <div class="space-y-4 bg-slate-900/60 p-5 rounded-xl border border-slate-800">
+            <label class="block font-bold text-slate-300 uppercase tracking-wider text-[11px]">Primary Brand Color Palette</label>
+            <div class="grid grid-cols-3 gap-2.5" id="theme-color-options">
+              <label class="cursor-pointer border border-slate-700 p-3 rounded-xl flex items-center gap-2 hover:border-emerald-500 transition">
+                <input type="radio" name="brand_theme" value="emerald" class="accent-emerald-500">
+                <span class="w-4 h-4 rounded-full bg-emerald-500 flex-shrink-0"></span>
+                <span class="font-bold text-slate-200">Emerald</span>
+              </label>
+              <label class="cursor-pointer border border-slate-700 p-3 rounded-xl flex items-center gap-2 hover:border-blue-500 transition">
+                <input type="radio" name="brand_theme" value="blue" class="accent-blue-500">
+                <span class="w-4 h-4 rounded-full bg-blue-500 flex-shrink-0"></span>
+                <span class="font-bold text-slate-200">Ocean Blue</span>
+              </label>
+              <label class="cursor-pointer border border-slate-700 p-3 rounded-xl flex items-center gap-2 hover:border-indigo-500 transition">
+                <input type="radio" name="brand_theme" value="indigo" class="accent-indigo-500">
+                <span class="w-4 h-4 rounded-full bg-indigo-500 flex-shrink-0"></span>
+                <span class="font-bold text-slate-200">Indigo</span>
+              </label>
+              <label class="cursor-pointer border border-slate-700 p-3 rounded-xl flex items-center gap-2 hover:border-violet-500 transition">
+                <input type="radio" name="brand_theme" value="violet" class="accent-violet-500">
+                <span class="w-4 h-4 rounded-full bg-violet-500 flex-shrink-0"></span>
+                <span class="font-bold text-slate-200">Violet</span>
+              </label>
+              <label class="cursor-pointer border border-slate-700 p-3 rounded-xl flex items-center gap-2 hover:border-rose-500 transition">
+                <input type="radio" name="brand_theme" value="rose" class="accent-rose-500">
+                <span class="w-4 h-4 rounded-full bg-rose-500 flex-shrink-0"></span>
+                <span class="font-bold text-slate-200">Rose Red</span>
+              </label>
+              <label class="cursor-pointer border border-slate-700 p-3 rounded-xl flex items-center gap-2 hover:border-amber-500 transition">
+                <input type="radio" name="brand_theme" value="amber" class="accent-amber-500">
+                <span class="w-4 h-4 rounded-full bg-amber-500 flex-shrink-0"></span>
+                <span class="font-bold text-slate-200">Amber Gold</span>
+              </label>
+            </div>
+
+            <div class="pt-2">
+              <label class="block font-bold text-slate-300 uppercase tracking-wider text-[11px]">Default Currency</label>
+              <select id="cfg-default_currency" class="w-full mt-1.5 bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-slate-200 outline-none">
+                <option value="INR">Indian Rupee (₹ INR)</option>
+                <option value="USD">US Dollar ($ USD)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Site Texts -->
+          <div class="space-y-4 bg-slate-900/60 p-5 rounded-xl border border-slate-800">
+            <div>
+              <label class="block font-bold text-slate-300 uppercase tracking-wider text-[11px]">Platform Brand Title</label>
+              <input type="text" id="cfg-site_title" class="w-full mt-1 bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-slate-200 outline-none font-semibold">
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-300 uppercase tracking-wider text-[11px]">Site Tagline</label>
+              <input type="text" id="cfg-site_tagline" class="w-full mt-1 bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-slate-200 outline-none">
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between">
+                <label class="font-bold text-slate-300 uppercase tracking-wider text-[11px]">Announcement Banner Message</label>
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                  <input type="checkbox" id="cfg-banner_enabled" class="accent-emerald-500">
+                  <span class="text-[11px] text-slate-400">Show Banner</span>
+                </label>
+              </div>
+              <textarea id="cfg-announcement_banner" rows="2" class="w-full mt-1.5 bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-200 outline-none"></textarea>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-300 uppercase tracking-wider text-[11px]">Footer Disclaimer</label>
+              <input type="text" id="cfg-footer_disclaimer" class="w-full mt-1 bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-slate-200 outline-none">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: LOAN PRESETS -->
+    <section id="tab-presets" class="tab-content hidden space-y-6">
+      <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-xl">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+          <div>
+            <h2 class="text-lg font-bold text-white">Loan Type Presets & Interest Rates</h2>
+            <p class="text-xs text-slate-400 mt-0.5">Configure default interest rates, limits, and tenures stored in SQLite</p>
+          </div>
+          <button onclick="openNewPresetModal()" class="px-3.5 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-lg transition">
+            + Add New Loan Type
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] font-bold">
+              <tr>
+                <th class="p-3">ID / Type</th>
+                <th class="p-3">Loan Name</th>
+                <th class="p-3">Default Rate</th>
+                <th class="p-3">Rate Range</th>
+                <th class="p-3">Default Tenure</th>
+                <th class="p-3">Default Amount</th>
+                <th class="p-3">Proc. Fee</th>
+                <th class="p-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="presets-tbody" class="divide-y divide-slate-800 text-slate-200 font-medium">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: SAVED CALCULATIONS -->
+    <section id="tab-saved" class="tab-content hidden space-y-6">
+      <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-xl">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+          <div>
+            <h2 class="text-lg font-bold text-white">Saved Calculations & Shared Reports</h2>
+            <p class="text-xs text-slate-400 mt-0.5">Review, inspect, or delete calculations generated by platform users</p>
+          </div>
+          <button onclick="loadSaved()" class="px-3 py-1.5 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition">
+            Refresh Records
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] font-bold">
+              <tr>
+                <th class="p-3">Share Code</th>
+                <th class="p-3">Title</th>
+                <th class="p-3">Calculator</th>
+                <th class="p-3">Loan Type</th>
+                <th class="p-3">Created At</th>
+                <th class="p-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="saved-tbody" class="divide-y divide-slate-800 text-slate-200 font-medium">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: SQL CONSOLE -->
+    <section id="tab-sql" class="tab-content hidden space-y-6">
+      <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+        <div>
+          <h2 class="text-lg font-bold text-white">Direct SQLite SQL Console</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Execute queries directly against <span class="font-mono text-emerald-400">loan_tool.db</span></p>
+        </div>
+
+        <!-- Quick snippets -->
+        <div class="flex flex-wrap gap-2 text-xs">
+          <button onclick="setQuery('SELECT * FROM loan_presets;')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[11px]">
+            SELECT * FROM loan_presets;
+          </button>
+          <button onclick="setQuery('SELECT id, share_code, title, calculator_type, created_at FROM saved_calculations;')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[11px]">
+            SELECT saved_calculations;
+          </button>
+          <button onclick="setQuery('SELECT * FROM site_settings;')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[11px]">
+            SELECT site_settings;
+          </button>
+          <button onclick="setQuery('PRAGMA table_info(loan_presets);')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[11px]">
+            PRAGMA table_info;
+          </button>
+        </div>
+
+        <div>
+          <textarea id="sql-input" rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 font-mono text-xs text-emerald-300 outline-none focus:border-emerald-500" placeholder="SELECT * FROM loan_presets LIMIT 10;"></textarea>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <span id="sql-status" class="text-xs text-slate-400">Ready</span>
+          <button onclick="executeSql()" class="px-4 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-md transition">
+            Execute SQL
+          </button>
+        </div>
+
+        <!-- SQL Output Table -->
+        <div id="sql-results-container" class="mt-4 overflow-x-auto max-h-96 border border-slate-800 rounded-xl hidden">
+          <table class="w-full text-left text-xs font-mono" id="sql-table">
+            <thead class="bg-slate-900 text-slate-400 sticky top-0" id="sql-thead"></thead>
+            <tbody class="divide-y divide-slate-800 text-slate-300" id="sql-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: STATS -->
+    <section id="tab-stats" class="tab-content hidden space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800">
+          <span class="text-xs text-slate-400 uppercase font-bold tracking-wider">Loan Presets</span>
+          <div class="text-3xl font-black text-white mt-1" id="stat-presets">-</div>
+        </div>
+        <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800">
+          <span class="text-xs text-slate-400 uppercase font-bold tracking-wider">Saved Calculations</span>
+          <div class="text-3xl font-black text-white mt-1" id="stat-saved">-</div>
+        </div>
+        <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800">
+          <span class="text-xs text-slate-400 uppercase font-bold tracking-wider">Database Size</span>
+          <div class="text-3xl font-black text-emerald-400 mt-1" id="stat-dbsize">-</div>
+        </div>
+        <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800">
+          <span class="text-xs text-slate-400 uppercase font-bold tracking-wider">Node Memory</span>
+          <div class="text-3xl font-black text-white mt-1" id="stat-memory">-</div>
+        </div>
+      </div>
+
+      <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-3 text-xs">
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider">SQLite Storage Details</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-slate-300">
+          <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+            <span class="text-slate-500 block">Database File Path</span>
+            <span class="font-mono text-emerald-400 font-bold" id="stat-dbpath">/app/data/loan_tool.db</span>
+          </div>
+          <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+            <span class="text-slate-500 block">Journaling Mode</span>
+            <span class="font-bold text-white">WAL (Write-Ahead Logging)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Edit Preset Modal -->
+  <div id="preset-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4 text-xs">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white" id="preset-modal-title">Edit Loan Preset</h3>
+        <button onclick="closePresetModal()" class="text-slate-400 hover:text-white text-lg font-bold">&times;</button>
+      </div>
+
+      <input type="hidden" id="pm-id">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-slate-400 block font-semibold">Name</label>
+          <input type="text" id="pm-name" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white outline-none">
+        </div>
+        <div>
+          <label class="text-slate-400 block font-semibold">Category Type</label>
+          <select id="pm-type" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white outline-none">
+            <option value="home">home</option>
+            <option value="personal">personal</option>
+            <option value="car">car</option>
+            <option value="education">education</option>
+            <option value="business">business</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3">
+        <div>
+          <label class="text-slate-400 block font-semibold">Default Rate (%)</label>
+          <input type="number" step="0.1" id="pm-default_rate" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white outline-none">
+        </div>
+        <div>
+          <label class="text-slate-400 block font-semibold">Min Rate (%)</label>
+          <input type="number" step="0.1" id="pm-min_rate" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white outline-none">
+        </div>
+        <div>
+          <label class="text-slate-400 block font-semibold">Max Rate (%)</label>
+          <input type="number" step="0.1" id="pm-max_rate" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white outline-none">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3">
+        <div>
+          <label class="text-slate-400 block font-semibold">Default Tenure (Yrs)</label>
+          <input type="number" id="pm-default_tenure_years" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white outline-none">
+        </div>
+        <div>
+          <label class="text-slate-400 block font-semibold">Min Tenure</label>
+          <input type="number" id="pm-min_tenure_years" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white outline-none">
+        </div>
+        <div>
+          <label class="text-slate-400 block font-semibold">Max Tenure</label>
+          <input type="number" id="pm-max_tenure_years" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white outline-none">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3">
+        <div>
+          <label class="text-slate-400 block font-semibold">Default Amount</label>
+          <input type="number" id="pm-default_amount" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white outline-none">
+        </div>
+        <div>
+          <label class="text-slate-400 block font-semibold">Min Amount</label>
+          <input type="number" id="pm-min_amount" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white outline-none">
+        </div>
+        <div>
+          <label class="text-slate-400 block font-semibold">Max Amount</label>
+          <input type="number" id="pm-max_amount" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white outline-none">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-slate-400 block font-semibold">Processing Fee (%)</label>
+          <input type="number" step="0.1" id="pm-default_processing_fee_percent" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white outline-none">
+        </div>
+        <div>
+          <label class="text-slate-400 block font-semibold">Down Payment (%)</label>
+          <input type="number" id="pm-default_down_payment_percent" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white outline-none">
+        </div>
+      </div>
+
+      <div>
+        <label class="text-slate-400 block font-semibold">Description</label>
+        <textarea id="pm-description" rows="2" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white outline-none"></textarea>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
+        <button onclick="closePresetModal()" class="px-3.5 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-semibold">Cancel</button>
+        <button onclick="savePreset()" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold">Save Preset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- View JSON Modal -->
+  <div id="json-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-3 text-xs">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+        <h3 class="text-sm font-bold text-white" id="json-modal-title">Record Details</h3>
+        <button onclick="document.getElementById('json-modal').classList.add('hidden')" class="text-slate-400 hover:text-white text-lg font-bold">&times;</button>
+      </div>
+      <pre id="json-modal-content" class="bg-slate-950 p-4 rounded-xl font-mono text-[11px] text-emerald-300 max-h-96 overflow-y-auto whitespace-pre-wrap"></pre>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-xl transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none">
+    Operation Successful
+  </div>
+
+  <script>
+    let currentPresets = [];
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.innerText = msg;
+      t.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        t.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+      }, 2500);
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-emerald-500/10', 'text-emerald-400', 'border', 'border-emerald-500/30');
+        btn.classList.add('text-slate-400');
+      });
+
+      document.getElementById('tab-' + tabId).classList.remove('hidden');
+      const activeBtn = document.getElementById('tab-btn-' + tabId);
+      activeBtn.classList.add('bg-emerald-500/10', 'text-emerald-400', 'border', 'border-emerald-500/30');
+      activeBtn.classList.remove('text-slate-400');
+
+      if (tabId === 'presets') loadPresets();
+      if (tabId === 'saved') loadSaved();
+      if (tabId === 'stats') loadStats();
+      if (tabId === 'theme') loadSettings();
+    }
+
+    // Load Settings
+    async function loadSettings() {
+      const res = await fetch('/api/admin/settings');
+      const data = await res.json();
+      if (data.settings) {
+        const s = data.settings;
+        if (s.site_title) document.getElementById('cfg-site_title').value = s.site_title;
+        if (s.site_tagline) document.getElementById('cfg-site_tagline').value = s.site_tagline;
+        if (s.announcement_banner) document.getElementById('cfg-announcement_banner').value = s.announcement_banner;
+        if (s.footer_disclaimer) document.getElementById('cfg-footer_disclaimer').value = s.footer_disclaimer;
+        if (s.default_currency) document.getElementById('cfg-default_currency').value = s.default_currency;
+        document.getElementById('cfg-banner_enabled').checked = (s.banner_enabled === 'true');
+
+        if (s.brand_theme) {
+          const radio = document.querySelector(`input[name="brand_theme"][value="${s.brand_theme}"]`);
+          if (radio) radio.checked = true;
+        }
+      }
+    }
+
+    async function saveSettings() {
+      const themeRadio = document.querySelector('input[name="brand_theme"]:checked');
+      const payload = {
+        site_title: document.getElementById('cfg-site_title').value,
+        site_tagline: document.getElementById('cfg-site_tagline').value,
+        announcement_banner: document.getElementById('cfg-announcement_banner').value,
+        banner_enabled: document.getElementById('cfg-banner_enabled').checked ? 'true' : 'false',
+        footer_disclaimer: document.getElementById('cfg-footer_disclaimer').value,
+        default_currency: document.getElementById('cfg-default_currency').value,
+        brand_theme: themeRadio ? themeRadio.value : 'emerald'
+      };
+
+      const res = await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Site Look & Feel updated successfully!');
+      } else {
+        alert('Failed: ' + data.error);
+      }
+    }
+
+    // Presets
+    async function loadPresets() {
+      const res = await fetch('/api/admin/presets');
+      const data = await res.json();
+      currentPresets = data.presets || [];
+      const tbody = document.getElementById('presets-tbody');
+      tbody.innerHTML = '';
+
+      currentPresets.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-900/60 transition';
+        tr.innerHTML = `
+          <td class="p-3 font-mono text-emerald-400 font-bold">${p.id}</td>
+          <td class="p-3 font-bold text-white">${p.name}</td>
+          <td class="p-3 text-emerald-400 font-bold">${p.default_rate}%</td>
+          <td class="p-3 text-slate-400">${p.min_rate}% - ${p.max_rate}%</td>
+          <td class="p-3 text-white">${p.default_tenure_years} Yrs</td>
+          <td class="p-3 font-bold">${Number(p.default_amount).toLocaleString()}</td>
+          <td class="p-3 text-slate-400">${p.default_processing_fee_percent}%</td>
+          <td class="p-3 text-right space-x-2">
+            <button onclick="openEditPreset('${p.id}')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold">Edit</button>
+            <button onclick="deletePreset('${p.id}')" class="px-2.5 py-1 rounded bg-rose-950/60 hover:bg-rose-900 text-rose-300 font-bold">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openEditPreset(id) {
+      const p = currentPresets.find(x => x.id === id);
+      if (!p) return;
+      document.getElementById('preset-modal-title').innerText = 'Edit Loan Preset: ' + p.name;
+      document.getElementById('pm-id').value = p.id;
+      document.getElementById('pm-name').value = p.name;
+      document.getElementById('pm-type').value = p.type;
+      document.getElementById('pm-default_rate').value = p.default_rate;
+      document.getElementById('pm-min_rate').value = p.min_rate;
+      document.getElementById('pm-max_rate').value = p.max_rate;
+      document.getElementById('pm-default_tenure_years').value = p.default_tenure_years;
+      document.getElementById('pm-min_tenure_years').value = p.min_tenure_years;
+      document.getElementById('pm-max_tenure_years').value = p.max_tenure_years;
+      document.getElementById('pm-default_amount').value = p.default_amount;
+      document.getElementById('pm-min_amount').value = p.min_amount;
+      document.getElementById('pm-max_amount').value = p.max_amount;
+      document.getElementById('pm-default_processing_fee_percent').value = p.default_processing_fee_percent;
+      document.getElementById('pm-default_down_payment_percent').value = p.default_down_payment_percent;
+      document.getElementById('pm-description').value = p.description;
+
+      document.getElementById('preset-modal').classList.remove('hidden');
+    }
+
+    function openNewPresetModal() {
+      document.getElementById('preset-modal-title').innerText = 'Add New Loan Preset';
+      document.getElementById('pm-id').value = '';
+      document.getElementById('pm-name').value = 'New Loan Offer';
+      document.getElementById('pm-type').value = 'home';
+      document.getElementById('pm-default_rate').value = '8.5';
+      document.getElementById('pm-min_rate').value = '6.0';
+      document.getElementById('pm-max_rate').value = '18.0';
+      document.getElementById('pm-default_tenure_years').value = '15';
+      document.getElementById('pm-min_tenure_years').value = '1';
+      document.getElementById('pm-max_tenure_years').value = '30';
+      document.getElementById('pm-default_amount').value = '2500000';
+      document.getElementById('pm-min_amount').value = '100000';
+      document.getElementById('pm-max_amount').value = '10000000';
+      document.getElementById('pm-default_processing_fee_percent').value = '0.5';
+      document.getElementById('pm-default_down_payment_percent').value = '20';
+      document.getElementById('pm-description').value = '';
+
+      document.getElementById('preset-modal').classList.remove('hidden');
+    }
+
+    function closePresetModal() {
+      document.getElementById('preset-modal').classList.add('hidden');
+    }
+
+    async function savePreset() {
+      const id = document.getElementById('pm-id').value;
+      const payload = {
+        name: document.getElementById('pm-name').value,
+        type: document.getElementById('pm-type').value,
+        default_rate: document.getElementById('pm-default_rate').value,
+        min_rate: document.getElementById('pm-min_rate').value,
+        max_rate: document.getElementById('pm-max_rate').value,
+        step_rate: 0.1,
+        default_tenure_years: document.getElementById('pm-default_tenure_years').value,
+        min_tenure_years: document.getElementById('pm-min_tenure_years').value,
+        max_tenure_years: document.getElementById('pm-max_tenure_years').value,
+        default_amount: document.getElementById('pm-default_amount').value,
+        min_amount: document.getElementById('pm-min_amount').value,
+        max_amount: document.getElementById('pm-max_amount').value,
+        step_amount: 50000,
+        default_processing_fee_percent: document.getElementById('pm-default_processing_fee_percent').value,
+        default_down_payment_percent: document.getElementById('pm-default_down_payment_percent').value,
+        description: document.getElementById('pm-description').value
+      };
+
+      const url = id ? `/api/admin/presets/${id}` : '/api/admin/presets';
+      const method = id ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        closePresetModal();
+        loadPresets();
+        showToast('Loan Preset saved successfully!');
+      } else {
+        alert('Failed: ' + data.error);
+      }
+    }
+
+    async function deletePreset(id) {
+      if (!confirm('Are you sure you want to delete preset ' + id + '?')) return;
+      const res = await fetch(`/api/admin/presets/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        loadPresets();
+        showToast('Preset deleted.');
+      }
+    }
+
+    // Saved calculations
+    let currentSaved = [];
+    async function loadSaved() {
+      const res = await fetch('/api/admin/saved');
+      const data = await res.json();
+      currentSaved = data.calculations || [];
+      const tbody = document.getElementById('saved-tbody');
+      tbody.innerHTML = '';
+
+      currentSaved.forEach(s => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-900/60 transition';
+        tr.innerHTML = `
+          <td class="p-3 font-mono text-emerald-400 font-bold">${s.share_code}</td>
+          <td class="p-3 font-bold text-white">${s.title}</td>
+          <td class="p-3 uppercase text-[10px]"><span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-bold">${s.calculator_type}</span></td>
+          <td class="p-3 text-slate-400 capitalize">${s.loan_type}</td>
+          <td class="p-3 text-slate-500">${new Date(s.created_at).toLocaleString()}</td>
+          <td class="p-3 text-right space-x-2">
+            <button onclick="viewSaved('${s.id}')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold">Inspect JSON</button>
+            <a href="http://localhost:3000/share/${s.share_code}" target="_blank" class="px-2.5 py-1 rounded bg-emerald-950/60 hover:bg-emerald-900 text-emerald-300 font-bold">Open Link</a>
+            <button onclick="deleteSaved('${s.id}')" class="px-2 py-1 rounded bg-rose-950/60 hover:bg-rose-900 text-rose-300 font-bold">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function viewSaved(id) {
+      const s = currentSaved.find(x => x.id === id);
+      if (!s) return;
+      document.getElementById('json-modal-title').innerText = `Calculation: ${s.title} (#${s.share_code})`;
+      const parsed = {
+        id: s.id,
+        share_code: s.share_code,
+        title: s.title,
+        calculator_type: s.calculator_type,
+        loan_type: s.loan_type,
+        input_data: JSON.parse(s.input_data || '{}'),
+        result_summary: JSON.parse(s.result_summary || '{}'),
+        created_at: s.created_at
+      };
+      document.getElementById('json-modal-content').innerText = JSON.stringify(parsed, null, 2);
+      document.getElementById('json-modal').classList.remove('hidden');
+    }
+
+    async function deleteSaved(id) {
+      if (!confirm('Delete calculation record?')) return;
+      const res = await fetch(`/api/admin/saved/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        loadSaved();
+        showToast('Record deleted.');
+      }
+    }
+
+    // SQL Console
+    function setQuery(q) {
+      document.getElementById('sql-input').value = q;
+    }
+
+    async function executeSql() {
+      const q = document.getElementById('sql-input').value.trim();
+      const statusEl = document.getElementById('sql-status');
+      if (!q) return;
+
+      statusEl.innerText = 'Running query...';
+      const res = await fetch('/api/admin/sql', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q })
+      });
+      const data = await res.json();
+
+      const container = document.getElementById('sql-results-container');
+      const thead = document.getElementById('sql-thead');
+      const tbody = document.getElementById('sql-tbody');
+      thead.innerHTML = '';
+      tbody.innerHTML = '';
+
+      if (data.success) {
+        statusEl.innerText = data.rows ? `Returned ${data.count} rows` : `Rows affected: ${data.changes}`;
+        if (data.rows && data.rows.length > 0) {
+          container.classList.remove('hidden');
+          const cols = Object.keys(data.rows[0]);
+          const trHead = document.createElement('tr');
+          cols.forEach(c => {
+            const th = document.createElement('th');
+            th.className = 'p-2.5 font-bold border-b border-slate-800';
+            th.innerText = c;
+            trHead.appendChild(th);
+          });
+          thead.appendChild(trHead);
+
+          data.rows.forEach(r => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-900/50';
+            cols.forEach(c => {
+              const td = document.createElement('td');
+              td.className = 'p-2.5 border-b border-slate-900 truncate max-w-xs';
+              td.innerText = typeof r[c] === 'object' ? JSON.stringify(r[c]) : r[c];
+              tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+          });
+        } else if (data.rows && data.rows.length === 0) {
+          container.classList.remove('hidden');
+          thead.innerHTML = '<tr><th class="p-3 text-slate-500">Query returned 0 rows.</th></tr>';
+        } else {
+          container.classList.add('hidden');
+        }
+      } else {
+        statusEl.innerText = 'Error: ' + data.error;
+        container.classList.add('hidden');
+      }
+    }
+
+    // Stats
+    async function loadStats() {
+      const res = await fetch('/api/admin/stats');
+      const data = await res.json();
+      if (data.stats) {
+        const s = data.stats;
+        document.getElementById('stat-presets').innerText = s.presets;
+        document.getElementById('stat-saved').innerText = s.saved;
+        document.getElementById('stat-dbsize').innerText = s.dbSizeKb + ' KB';
+        document.getElementById('stat-memory').innerText = s.memoryUsageMb + ' MB';
+        document.getElementById('stat-dbpath').innerText = s.dbPath;
+      }
+    }
+
+    // Init
+    loadSettings();
+  </script>
+</body>
+</html>

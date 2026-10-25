@@ -47,6 +47,7 @@ cmd_start() {
 
   echo -e "\n${GREEN}${BOLD}[SUCCESS] Services are up and running!${NC}"
   echo -e "  ${BOLD}Frontend Dashboard:${NC} ${CYAN}http://localhost:3000${NC}"
+  echo -e "  ${BOLD}Admin Console:${NC}      ${CYAN}http://localhost:3001${NC}"
   echo -e "  ${BOLD}Backend API Health:${NC} ${CYAN}http://localhost:5001/api/health${NC}"
   echo -e "  ${BOLD}API Documentation:${NC}  ${CYAN}http://localhost:5001/${NC}"
   echo -e "  ${BOLD}SQLite Database:${NC}    ${CYAN}./data/loan_tool.db (Persistent)${NC}"
@@ -88,9 +89,15 @@ cmd_status() {
   fi
 
   if curl -s http://localhost:3000 >/dev/null 2>&1; then
-    echo -e "  Frontend App: ${GREEN}ONLINE (Port 3000)${NC}"
+    echo -e "  Frontend App:  ${GREEN}ONLINE (Port 3000)${NC}"
   else
-    echo -e "  Frontend App: ${RED}OFFLINE${NC}"
+    echo -e "  Frontend App:  ${RED}OFFLINE${NC}"
+  fi
+
+  if curl -s http://localhost:3001 >/dev/null 2>&1; then
+    echo -e "  Admin Console: ${GREEN}ONLINE (Port 3001)${NC}"
+  else
+    echo -e "  Admin Console: ${RED}OFFLINE${NC}"
   fi
 }
 

@@ -9,13 +9,15 @@ import { FixedVsFloating } from './components/calculators/FixedVsFloating';
 import { SavedCalculationsModal } from './components/saved/SavedCalculationsModal';
 import { ShareModal } from './components/common/ShareModal';
 import { CurrencyType, LoanPreset, SavedCalculationItem } from './types';
-import { fetchPresets, fetchSavedByCode, saveCalculation } from './services/api';
-import { Shield, Sparkles, CheckCircle, Calculator, Info } from 'lucide-react';
+import { fetchPresets, fetchSavedByCode, fetchSettings, saveCalculation } from './services/api';
+import { Shield, Sparkles, CheckCircle, Calculator, Info, Megaphone, X, Settings } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('emi');
   const [currency, setCurrency] = useState<CurrencyType>('INR');
   const [presets, setPresets] = useState<LoanPreset[]>([]);
+  const [settings, setSettings] = useState<Record<string, string>>({});
+  const [showBanner, setShowBanner] = useState<boolean>(true);
   const [isSavedModalOpen, setIsSavedModalOpen] = useState<boolean>(false);
   const [shareModalData, setShareModalData] = useState<{
     title: string;
@@ -23,11 +25,20 @@ export const App: React.FC = () => {
     shareUrl: string;
   } | null>(null);
 
-  // Load presets on mount
+  // Load presets and settings on mount
   useEffect(() => {
     fetchPresets().then((data) => {
       if (data && data.length > 0) {
         setPresets(data);
+      }
+    });
+
+    fetchSettings().then((cfg) => {
+      if (cfg) {
+        setSettings(cfg);
+        if (cfg.default_currency && (cfg.default_currency === 'INR' || cfg.default_currency === 'USD')) {
+          setCurrency(cfg.default_currency as CurrencyType);
+        }
       }
     });
 
@@ -70,6 +81,23 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
+      {/* Dynamic Announcement Banner (Configured via Admin Console) */}
+      {settings.banner_enabled === 'true' && settings.announcement_banner && showBanner && (
+        <div className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white text-xs font-semibold px-4 py-2 flex items-center justify-between shadow-xs">
+          <div className="max-w-7xl mx-auto flex items-center gap-2 text-center sm:text-left flex-1 justify-center sm:justify-start">
+            <Megaphone className="w-4 h-4 text-emerald-200 flex-shrink-0" />
+            <span>{settings.announcement_banner}</span>
+          </div>
+          <button
+            onClick={() => setShowBanner(false)}
+            className="p-1 hover:bg-white/20 rounded-md transition text-emerald-100 hover:text-white"
+            title="Dismiss Announcement"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
       {/* Top Navbar */}
       <Navbar
         activeTab={activeTab}
@@ -185,7 +213,15 @@ export const App: React.FC = () => {
             <span>•</span>
             <span>React & Express TypeScript</span>
             <span>•</span>
-            <span>SQLite Storage</span>
+            <a
+              href="http://localhost:3001"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-bold transition"
+            >
+              <Settings className="w-3.5 h-3.5" />
+              <span>Admin Console</span>
+            </a>
           </div>
         </div>
       </footer>

@@ -39,6 +39,24 @@ services:
     networks:
       - loan-network
 
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    container_name: loan-tool-admin
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - DB_PATH=/app/data/loan_tool.db
+    volumes:
+      - ./admin:/app
+      - /app/node_modules
+      - ./data:/app/data
+    restart: unless-stopped
+    networks:
+      - loan-network
+
 volumes:
   sqlite_data:
     driver: local

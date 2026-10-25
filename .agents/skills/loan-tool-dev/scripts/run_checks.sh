@@ -31,11 +31,16 @@ if ! docker compose ps | grep -q "loan-tool-frontend"; then
   echo -e "${RED}[FAIL] loan-tool-frontend container is not running. Run: ./scripts/manage.sh start${NC}"
   exit 1
 fi
-echo -e "${GREEN}[PASS] Both containers are running.${NC}"
+if ! docker compose ps | grep -q "loan-tool-admin"; then
+  echo -e "${RED}[FAIL] loan-tool-admin container is not running. Run: ./scripts/manage.sh start${NC}"
+  exit 1
+fi
+echo -e "${GREEN}[PASS] All 3 containers are running.${NC}"
 
 echo -e "\n${BLUE}${BOLD}[3/5] Checking HTTP endpoints...${NC}"
 BACKEND_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5001/api/health || echo "000")
 FRONTEND_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/ || echo "000")
+ADMIN_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3001/ || echo "000")
 
 if [ "$BACKEND_STATUS" != "200" ]; then
   echo -e "${RED}[FAIL] Backend API returned status $BACKEND_STATUS${NC}"
@@ -45,7 +50,11 @@ if [ "$FRONTEND_STATUS" != "200" ]; then
   echo -e "${RED}[FAIL] Frontend returned status $FRONTEND_STATUS${NC}"
   exit 1
 fi
-echo -e "${GREEN}[PASS] Endpoints responding (Backend :5001 -> 200, Frontend :3000 -> 200).${NC}"
+if [ "$ADMIN_STATUS" != "200" ]; then
+  echo -e "${RED}[FAIL] Admin console returned status $ADMIN_STATUS${NC}"
+  exit 1
+fi
+echo -e "${GREEN}[PASS] Endpoints responding (Backend :5001 -> 200, Frontend :3000 -> 200, Admin :3001 -> 200).${NC}"
 
 echo -e "\n${BLUE}${BOLD}[4/5] Running Backend Automated Tests in Docker...${NC}"
 docker compose run --rm backend npm test

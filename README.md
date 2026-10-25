@@ -55,6 +55,13 @@ LoanPro is a production-grade, responsive loan comparison and financial analytic
    - **Executive PDF Statements**: Professional financial statement with header banner, KPI summary box, and styled amortization table.
    - **Persistent SQLite Saving & Shareable Reports**: Generates unique shareable codes (`/share/:code`) persisted directly in the local SQLite database.
 
+9. **Dedicated Lightweight Admin Console (Port 3001)**
+   - **Site Look & Feel Manager**: Change brand color palette (Emerald, Blue, Indigo, Violet, Rose, Amber), platform title, tagline, default currency, and toggle dynamic announcement banners.
+   - **Loan Presets Manager**: Edit interest rates, limits, and tenures for Home, Personal, Car, Education, and Business loans, or add custom presets.
+   - **Saved User Calculations Browser**: Inspect user calculations, view JSON inputs/outputs, and manage records.
+   - **Direct SQLite SQL Console**: Run raw SQL queries against `loan_tool.db` with live data table rendering.
+   - **Storage Diagnostics**: View SQLite file size, WAL status, and container memory.
+
 ---
 
 ## 🛠️ Technology Stack & Architecture
@@ -77,8 +84,9 @@ docker compose up --build
 
 ### 2. Access the Application
 - **Frontend Web Dashboard**: [http://localhost:3000](http://localhost:3000)
-- **Backend API & Health Check**: [http://localhost:5000/api/health](http://localhost:5000/api/health)
-- **API Documentation Root**: [http://localhost:5000/](http://localhost:5000/)
+- **Admin Control Console**: [http://localhost:3001](http://localhost:3001)
+- **Backend API & Health Check**: [http://localhost:5001/api/health](http://localhost:5001/api/health)
+- **API Documentation Root**: [http://localhost:5001/](http://localhost:5001/)
 
 ### 3. Hot Reload in Development
 - Edits made to `frontend/src/*` trigger automatic hot-module replacement (HMR) at [http://localhost:3000](http://localhost:3000).

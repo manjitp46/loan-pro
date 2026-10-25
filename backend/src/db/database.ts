@@ -48,16 +48,51 @@ export function initDatabase() {
       updated_at TEXT NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS site_settings (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+
     CREATE INDEX IF NOT EXISTS idx_saved_share_code ON saved_calculations(share_code);
     CREATE INDEX IF NOT EXISTS idx_saved_calculator_type ON saved_calculations(calculator_type);
   `);
 
-  // Seed default presets if empty
+  // Seed default presets and settings if empty
   const count = db.prepare('SELECT count(*) as count FROM loan_presets').get() as { count: number };
   if (count.count === 0) {
     seedDefaultPresets();
     seedSampleCalculations();
   }
+
+  const settingsCount = db.prepare('SELECT count(*) as count FROM site_settings').get() as { count: number };
+  if (settingsCount.count === 0) {
+    seedDefaultSettings();
+  }
+}
+
+function seedDefaultSettings() {
+  const insert = db.prepare(`
+    INSERT OR REPLACE INTO site_settings (key, value, updated_at) VALUES (?, ?, ?)
+  `);
+  const now = new Date().toISOString();
+  const defaults: Record<string, string> = {
+    site_title: 'LoanPro - Advanced Loan Comparison Platform',
+    site_tagline: 'Institutional-Grade EMI & Loan Comparison Engine',
+    brand_theme: 'emerald',
+    default_currency: 'INR',
+    announcement_banner: 'Special 2026 Festive Home Loan Rates: Starting from 8.35% p.a.! Compare offers today.',
+    banner_enabled: 'true',
+    contact_email: 'support@loanpro.local',
+    footer_disclaimer: 'LoanPro financial calculations and comparison reports are for estimation purposes.',
+  };
+
+  const transaction = db.transaction((entries) => {
+    for (const [k, v] of Object.entries(entries)) {
+      insert.run(k, v, now);
+    }
+  });
+  transaction(defaults);
 }
 
 function seedDefaultPresets() {
