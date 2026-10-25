@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: loan-tool-backend
+    ports:
+      - "5001:5000"
+    environment:
+      - NODE_ENV=development
+      - PORT=5000
+      - DB_DIR=/app/data
+      - DB_PATH=/app/data/loan_tool.db
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - ./data:/app/data
+    restart: unless-stopped
+    networks:
+      - loan-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: loan-tool-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_BACKEND_URL=http://backend:5000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - loan-network
+
+volumes:
+  sqlite_data:
+    driver: local
+
+networks:
+  loan-network:
+    driver: bridge
