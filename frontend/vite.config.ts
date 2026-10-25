@@ -6,9 +6,11 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 3000,
+    strictPort: true,
     watch: {
       usePolling: true,
-      interval: 100,
+      interval: 1000,
+      ignored: ['**/node_modules/**', '**/.git/**', '**/dist/**'],
     },
     proxy: {
       '/api': {
@@ -16,5 +18,17 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
+  },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'lucide-react',
+      'recharts',
+      'jspdf',
+      'jspdf-autotable',
+      'clsx',
+      'tailwind-merge',
+    ],
   },
 });
