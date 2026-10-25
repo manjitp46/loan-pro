@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { CurrencyType, EmiCalculationResult, LoanPreset, LoanType } from '../../types';
 import { ClientCalculatorEngine } from '../../utils/calculatorEngine';
-import { formatCurrency, formatPercent } from '../../utils/formatters';
+import { formatCurrency, formatPercent, formatTenure } from '../../utils/formatters';
 import { PrincipalInterestDonut } from '../charts/PrincipalInterestDonut';
 import { AmortizationBarChart } from '../charts/AmortizationBarChart';
 import { BalanceScheduleAreaChart } from '../charts/BalanceScheduleAreaChart';
