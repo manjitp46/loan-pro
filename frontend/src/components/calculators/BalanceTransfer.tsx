@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { ArrowRightLeft, CheckCircle, AlertTriangle, XCircle, TrendingDown, Clock, ShieldCheck, Share2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowRightLeft, CheckCircle, AlertTriangle, XCircle, TrendingDown, Clock, ShieldCheck, Share2, Check } from 'lucide-react';
 import { BalanceTransferResult, CurrencyType } from '../../types';
 import { ClientCalculatorEngine } from '../../utils/calculatorEngine';
 import { formatCurrency, formatPercent, formatTenure, getCurrencySymbol } from '../../utils/formatters';
 import { NumericInput } from '../common/NumericInput';
+import { copyToClipboard, generateShareUrl, syncAppState } from '../../utils/urlState';
 
 interface TransferProps {
   currency: CurrencyType;
@@ -20,6 +21,32 @@ export const BalanceTransfer: React.FC<TransferProps> = ({ currency, onSaveShare
   const [newTenureMonths, setNewTenureMonths] = useState<number>(180);
   const [newProcessingFeePercent, setNewProcessingFeePercent] = useState<number>(0.5);
   const [foreclosurePenaltyPercent, setForeclosurePenaltyPercent] = useState<number>(0);
+  const [copiedUrl, setCopiedUrl] = useState<boolean>(false);
+
+  useEffect(() => {
+    syncAppState({
+      tab: 'transfer',
+      currency,
+      amount: outstandingBalance,
+      currentRate,
+      newRate,
+    });
+  }, [outstandingBalance, currentRate, newRate, currency]);
+
+  const handleCopyDirectLink = async () => {
+    const url = generateShareUrl({
+      tab: 'transfer',
+      currency,
+      amount: outstandingBalance,
+      currentRate,
+      newRate,
+    });
+    const ok = await copyToClipboard(url);
+    if (ok) {
+      setCopiedUrl(true);
+      setTimeout(() => setCopiedUrl(false), 3000);
+    }
+  };
 
   const result: BalanceTransferResult = ClientCalculatorEngine.calculateBalanceTransfer(
     outstandingBalance,
@@ -63,13 +90,26 @@ export const BalanceTransfer: React.FC<TransferProps> = ({ currency, onSaveShare
             Determine whether switching your existing loan to a lower rate lender will yield real net savings after all switching costs.
           </p>
         </div>
-        <button
-          onClick={handleShare}
-          className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-lg shadow-sm transition"
-        >
-          <Share2 className="w-4 h-4 text-emerald-600" />
-          <span>Share Analysis</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleCopyDirectLink}
+            className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold rounded-lg transition shadow-sm ${
+              copiedUrl
+                ? 'bg-emerald-600 text-white'
+                : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-300'
+            }`}
+            title="Copy direct share URL"
+          >
+            {copiedUrl ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4 text-emerald-600" />}
+            <span>{copiedUrl ? 'Copied!' : 'Copy Direct URL'}</span>
+          </button>
+          <button
+            onClick={handleShare}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-lg shadow-sm transition"
+          >
+            <span>Save Analysis</span>
+          </button>
+        </div>
       </div>
 
       {/* Main Comparison Section */}

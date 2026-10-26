@@ -66,4 +66,22 @@ describe('API Route Tests', () => {
     expect(getRes.body.success).toBe(true);
     expect(getRes.body.data.title).toBe('Integration Test Home Loan');
   });
+
+  it('POST /api/calculate/multi-scenario calculates rate & tenure sensitivity matrix', async () => {
+    const res = await request(app)
+      .post('/api/calculate/multi-scenario')
+      .send({
+        principal: 4000000,
+        rates: [8.25, 8.5, 8.75],
+        tenuresYears: [15, 20],
+        baseRate: 8.5,
+        baseTenureYears: 20,
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.matrix.length).toBe(3);
+    expect(res.body.data.matrix[0].length).toBe(2);
+    expect(res.body.data.baseScenario.monthlyEmi).toBeGreaterThan(0);
+  });
 });

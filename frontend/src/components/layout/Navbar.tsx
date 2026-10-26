@@ -9,6 +9,7 @@ import {
   Bookmark,
   ChevronDown,
   Globe,
+  Layers,
 } from 'lucide-react';
 import { CurrencyType } from '../../types';
 import { CURRENCY_CATALOG, getCurrencyConfig } from '../../utils/formatters';
@@ -124,6 +125,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const tabs = [
     { id: 'emi', label: 'EMI Calculator', icon: Calculator },
+    { id: 'multi_rate', label: 'Multi-Rate Planner', icon: Layers, isNew: true },
     { id: 'comparison', label: 'Compare Loans', icon: GitCompare },
     { id: 'prepayment', label: 'Prepayment Simulator', icon: TrendingDown },
     { id: 'transfer', label: 'Balance Transfer', icon: ArrowRightLeft },
@@ -254,6 +256,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <Icon className={`w-4 h-4 ${isActive ? currentTheme.activeIcon : 'text-slate-400'}`} />
                 <span>{tab.label}</span>
+                {tab.isNew && (
+                  <span className="ml-1 text-[9px] font-black px-1.5 py-0.2 rounded-full bg-emerald-600 text-white tracking-wider">
+                    NEW
+                  </span>
+                )}
               </button>
             );
           })}

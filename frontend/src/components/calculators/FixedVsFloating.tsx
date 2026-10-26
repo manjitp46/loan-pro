@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Plus, Trash2, Percent, TrendingUp, TrendingDown, ArrowRight, Share2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Trash2, Percent, TrendingUp, TrendingDown, ArrowRight, Share2, Check } from 'lucide-react';
 import { CurrencyType } from '../../types';
 import { ClientCalculatorEngine } from '../../utils/calculatorEngine';
 import { formatCurrency, formatPercent, formatTenure, getCurrencySymbol } from '../../utils/formatters';
 import { NumericInput } from '../common/NumericInput';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
+import { copyToClipboard, generateShareUrl, syncAppState } from '../../utils/urlState';
 
 interface FixedVsFloatingProps {
   currency: CurrencyType;
@@ -22,6 +23,32 @@ export const FixedVsFloating: React.FC<FixedVsFloatingProps> = ({ currency, onSa
   const [fixedRate, setFixedRate] = useState<number>(9.0);
   const [initialFloatingRate, setInitialFloatingRate] = useState<number>(8.25);
   const [tenureYears, setTenureYears] = useState<number>(20);
+  const [copiedUrl, setCopiedUrl] = useState<boolean>(false);
+
+  useEffect(() => {
+    syncAppState({
+      tab: 'floating',
+      currency,
+      amount: principal,
+      rate: fixedRate,
+      tenure: tenureYears,
+    });
+  }, [principal, fixedRate, initialFloatingRate, tenureYears, currency]);
+
+  const handleCopyDirectLink = async () => {
+    const url = generateShareUrl({
+      tab: 'floating',
+      currency,
+      amount: principal,
+      rate: fixedRate,
+      tenure: tenureYears,
+    });
+    const ok = await copyToClipboard(url);
+    if (ok) {
+      setCopiedUrl(true);
+      setTimeout(() => setCopiedUrl(false), 3000);
+    }
+  };
 
   const [ratePoints, setRatePoints] = useState<RatePoint[]>([
     { id: '1', month: 24, newRate: 8.75 },
@@ -113,13 +140,26 @@ export const FixedVsFloating: React.FC<FixedVsFloatingProps> = ({ currency, onSa
             Model interest rate hiking and cooling cycles to evaluate long-term financial exposure.
           </p>
         </div>
-        <button
-          onClick={handleShare}
-          className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-lg shadow-sm transition"
-        >
-          <Share2 className="w-4 h-4 text-emerald-600" />
-          <span>Share Scenario</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleCopyDirectLink}
+            className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold rounded-lg transition shadow-sm ${
+              copiedUrl
+                ? 'bg-emerald-600 text-white'
+                : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-300'
+            }`}
+            title="Copy direct share URL"
+          >
+            {copiedUrl ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4 text-emerald-600" />}
+            <span>{copiedUrl ? 'Copied!' : 'Copy Direct URL'}</span>
+          </button>
+          <button
+            onClick={handleShare}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-lg shadow-sm transition"
+          >
+            <span>Save Simulation</span>
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

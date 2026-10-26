@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { AmortizationYearEntry, CurrencyType, EmiCalculationResult, LoanComparisonResult } from '../types';
+import { AmortizationYearEntry, CurrencyType, EmiCalculationResult, LoanComparisonResult, MultiScenarioMatrixResult } from '../types';
 import { formatCurrency, formatPercent } from './formatters';
 
 export function exportScheduleToCsv(yearlySchedule: AmortizationYearEntry[], currency: CurrencyType = 'INR', filename = 'amortization-schedule.csv') {
@@ -188,4 +188,116 @@ export function exportComparisonToPdf(comparison: LoanComparisonResult, currency
   });
 
   doc.save('loan-comparison-report.pdf');
+}
+
+export function exportMultiScenarioToCsv(result: MultiScenarioMatrixResult, currency: CurrencyType = 'INR', filename = 'home-loan-rate-tenure-matrix.csv') {
+  const rows: (string | number)[][] = [];
+
+  // Title & Metadata
+  rows.push(['LoanPro Home Loan Multi-Rate & Tenure Scenario Matrix']);
+  rows.push(['Loan Principal Amount', result.principal]);
+  rows.push(['Baseline Interest Rate', `${result.baseScenario.annualRate}%`]);
+  rows.push(['Baseline Tenure', `${result.baseScenario.tenureYears} Years (${result.baseScenario.tenureMonths} Months)`]);
+  rows.push(['Baseline Monthly EMI', result.baseScenario.monthlyEmi]);
+  rows.push(['Baseline Total Interest', result.baseScenario.totalInterest]);
+  rows.push([]);
+
+  // Matrix Headers
+  const headerRow = ['Interest Rate (p.a.)'];
+  result.tenuresYears.forEach((t) => {
+    headerRow.push(`${t} Yrs (${t * 12}M) - EMI`);
+    headerRow.push(`${t} Yrs - Total Interest`);
+    headerRow.push(`${t} Yrs - Total Payment`);
+  });
+  rows.push(headerRow);
+
+  // Matrix Data Rows
+  result.matrix.forEach((rateRow) => {
+    const row: (string | number)[] = [`${rateRow[0].annualRate}%`];
+    rateRow.forEach((cell) => {
+      row.push(cell.monthlyEmi);
+      row.push(cell.totalInterest);
+      row.push(cell.totalPayment);
+    });
+    rows.push(row);
+  });
+
+  rows.push([]);
+  rows.push(['Repayment Advisory Insights']);
+  rows.push([
+    'Tenure Cut Savings',
+    `Cutting from ${result.advisoryInsights.tenureCutSavings.fromYears} to ${result.advisoryInsights.tenureCutSavings.toYears} Yrs`,
+    `Monthly EMI increase: ${result.advisoryInsights.tenureCutSavings.monthlyEmiIncrease}`,
+    `Lifetime interest saved: ${result.advisoryInsights.tenureCutSavings.lifetimeInterestSaved}`,
+  ]);
+  rows.push([
+    'Rate Hike Impact',
+    `+${result.advisoryInsights.rateHikeImpact.hikePercent}% rate hike to ${result.advisoryInsights.rateHikeImpact.revisedRate}%`,
+    `Monthly EMI increase: ${result.advisoryInsights.rateHikeImpact.monthlyEmiIncrease}`,
+    `Lifetime interest increase: ${result.advisoryInsights.rateHikeImpact.lifetimeInterestIncrease}`,
+    `Equivalent lump sum prepayment needed: ${result.advisoryInsights.rateHikeImpact.equivalentLumpSumPrepayment}`,
+  ]);
+
+  const csvContent = 'data:text/csv;charset=utf-8,' + rows.map((e) => e.map((cell) => `"${cell}"`).join(',')).join('\n');
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement('a');
+  link.setAttribute('href', encodedUri);
+  link.setAttribute('download', filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+export function exportMultiScenarioToPdf(result: MultiScenarioMatrixResult, currency: CurrencyType = 'INR') {
+  const doc = new jsPDF({
+    orientation: 'landscape',
+    unit: 'mm',
+    format: 'a4',
+  });
+
+  // Header background
+  doc.setFillColor(15, 23, 42); // slate-900
+  doc.rect(0, 0, 297, 24, 'F');
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'bold');
+  doc.text('LoanPro - Home Loan Multi-Rate & Tenure Scenario Matrix', 14, 16);
+
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Principal: ${formatCurrency(result.principal, currency)} | Base: ${result.baseScenario.annualRate}% @ ${result.baseScenario.tenureYears} Yrs`, 180, 16);
+
+  // Table Headers
+  const tableHead = ['Interest Rate (p.a.)'];
+  result.tenuresYears.forEach((t) => {
+    tableHead.push(`${t} Years EMI / Total Int.`);
+  });
+
+  const tableBody = result.matrix.map((rateRow) => {
+    const row = [`${rateRow[0].annualRate}%`];
+    rateRow.forEach((cell) => {
+      row.push(`${formatCurrency(cell.monthlyEmi, currency)}\n(Int: ${formatCurrency(cell.totalInterest, currency, true)})`);
+    });
+    return row;
+  });
+
+  autoTable(doc, {
+    startY: 30,
+    head: [tableHead],
+    body: tableBody,
+    theme: 'grid',
+    headStyles: {
+      fillColor: [5, 150, 105],
+      textColor: [255, 255, 255],
+      fontStyle: 'bold',
+      fontSize: 9,
+    },
+    bodyStyles: {
+      fontSize: 8,
+      textColor: [15, 23, 42],
+    },
+  });
+
+  doc.save('home-loan-rate-tenure-matrix.pdf');
 }

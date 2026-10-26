@@ -152,4 +152,61 @@ describe('FinancialMath Engine Tests', () => {
       expect(bankB?.isLowestEmi).toBe(true);
     });
   });
+
+  describe('generateMultiScenarioMatrix', () => {
+    it('computes correct matrix dimensions and calculations for home loan rate & tenure combinations', () => {
+      const principal = 5000000;
+      const rates = [8.0, 8.5, 9.0];
+      const tenuresYears = [15, 20, 25];
+
+      const result = FinancialMath.generateMultiScenarioMatrix({
+        principal,
+        rates,
+        tenuresYears,
+        baseRate: 8.5,
+        baseTenureYears: 20,
+      });
+
+      expect(result.matrix.length).toBe(3); // 3 rates
+      expect(result.matrix[0].length).toBe(3); // 3 tenures per rate
+      expect(result.baseScenario.monthlyEmi).toBeCloseTo(43391.15, 1);
+
+      // Lowest EMI should be at lowest rate (8.0%) and longest tenure (25 years = 300 months)
+      expect(result.lowestEmiCell.annualRate).toBe(8.0);
+      expect(result.lowestEmiCell.tenureYears).toBe(25);
+
+      // Lowest Total Interest should be at lowest rate (8.0%) and shortest tenure (15 years)
+      expect(result.lowestInterestCell.annualRate).toBe(8.0);
+      expect(result.lowestInterestCell.tenureYears).toBe(15);
+
+      // Tenure cut savings check (20 yrs to 15 yrs)
+      expect(result.advisoryInsights.tenureCutSavings.lifetimeInterestSaved).toBeGreaterThan(1000000);
+      expect(result.advisoryInsights.tenureCutSavings.monthlyEmiIncrease).toBeGreaterThan(0);
+
+      // Rate hike impact (+0.5% to 9.0%)
+      expect(result.advisoryInsights.rateHikeImpact.revisedRate).toBe(9.0);
+      expect(result.advisoryInsights.rateHikeImpact.monthlyEmiIncrease).toBeGreaterThan(1000);
+      expect(result.advisoryInsights.rateHikeImpact.equivalentLumpSumPrepayment).toBeGreaterThan(100000);
+    });
+
+    it('supports direct tenures in months (including non-integer years)', () => {
+      const principal = 4000000;
+      const rates = [8.5];
+      const tenuresMonths = [84, 142, 180, 240]; // 7 yrs, 11.83 yrs, 15 yrs, 20 yrs
+
+      const result = FinancialMath.generateMultiScenarioMatrix({
+        principal,
+        rates,
+        tenuresMonths,
+        baseRate: 8.5,
+        baseTenureMonths: 142,
+      });
+
+      expect(result.matrix[0].length).toBe(4);
+      expect(result.baseScenario.tenureMonths).toBe(142);
+      expect(result.baseScenario.monthlyEmi).toBeGreaterThan(0);
+      expect(result.matrix[0][0].tenureMonths).toBe(84);
+      expect(result.matrix[0][1].tenureMonths).toBe(142);
+    });
+  });
 });

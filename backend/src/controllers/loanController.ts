@@ -83,6 +83,19 @@ const comparisonSchema = z.object({
   ).min(1).max(8),
 });
 
+const multiScenarioSchema = z.object({
+  principal: z.number().positive(),
+  rates: z.array(z.number().positive().max(100)).min(1).max(20),
+  tenuresYears: z.array(z.number().positive().max(50)).min(1).max(20).optional(),
+  tenuresMonths: z.array(z.number().int().positive().max(600)).min(1).max(20).optional(),
+  baseRate: z.number().positive().max(100).optional(),
+  baseTenureYears: z.number().positive().max(50).optional(),
+  baseTenureMonths: z.number().int().positive().max(600).optional(),
+}).refine(
+  (data) => (data.tenuresYears && data.tenuresYears.length > 0) || (data.tenuresMonths && data.tenuresMonths.length > 0),
+  { message: 'Either tenuresYears or tenuresMonths must be provided' }
+);
+
 export class LoanController {
   public static getPresets(req: Request, res: Response): void {
     try {
@@ -186,6 +199,20 @@ export class LoanController {
     try {
       const validated = comparisonSchema.parse(req.body);
       const result = FinancialMath.compareLoanOffers(validated.offers);
+      res.json({ success: true, data: result });
+    } catch (err: any) {
+      if (err instanceof z.ZodError) {
+        res.status(400).json({ success: false, errors: err.errors });
+        return;
+      }
+      res.status(500).json({ success: false, error: err.message });
+    }
+  }
+
+  public static calculateMultiScenario(req: Request, res: Response): void {
+    try {
+      const validated = multiScenarioSchema.parse(req.body);
+      const result = FinancialMath.generateMultiScenarioMatrix(validated);
       res.json({ success: true, data: result });
     } catch (err: any) {
       if (err instanceof z.ZodError) {

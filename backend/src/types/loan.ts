@@ -245,10 +245,66 @@ export interface SavedCalculationRecord {
   id: string;
   shareCode: string;
   title: string;
-  calculatorType: 'emi' | 'comparison' | 'prepayment' | 'transfer' | 'eligibility' | 'floating';
+  calculatorType: 'emi' | 'comparison' | 'prepayment' | 'transfer' | 'eligibility' | 'floating' | 'multi_rate';
   loanType: LoanType;
   inputData: string; // JSON string
   resultSummary: string; // JSON string
   createdAt: string;
   updatedAt: string;
+}
+
+export interface MultiScenarioMatrixCell {
+  annualRate: number;
+  tenureYears: number;
+  tenureMonths: number;
+  monthlyEmi: number;
+  totalInterest: number;
+  totalPayment: number;
+  interestToPrincipalRatio: number;
+  differenceFromBaseEmi?: number;
+  differenceFromBaseInterest?: number;
+  differenceFromBaseTotal?: number;
+}
+
+export interface MultiScenarioMatrixInput {
+  principal: number;
+  rates: number[];
+  tenuresYears?: number[];
+  tenuresMonths?: number[];
+  baseRate?: number;
+  baseTenureYears?: number;
+  baseTenureMonths?: number;
+}
+
+export interface MultiScenarioMatrixResult {
+  principal: number;
+  rates: number[];
+  tenuresYears: number[];
+  tenuresMonths: number[];
+  matrix: MultiScenarioMatrixCell[][]; // [rateIndex][tenureIndex]
+  baseScenario: MultiScenarioMatrixCell;
+  lowestEmiCell: MultiScenarioMatrixCell;
+  lowestInterestCell: MultiScenarioMatrixCell;
+  advisoryInsights: {
+    tenureCutSavings: {
+      fromYears: number;
+      toYears: number;
+      monthlyEmiIncrease: number;
+      lifetimeInterestSaved: number;
+    };
+    rateHikeImpact: {
+      hikePercent: number;
+      revisedRate: number;
+      monthlyEmiIncrease: number;
+      lifetimeInterestIncrease: number;
+      equivalentTenureExtensionMonths: number;
+      equivalentLumpSumPrepayment: number;
+    };
+    rateDropAdvantage: {
+      dropPercent: number;
+      revisedRate: number;
+      monthlyEmiSavings: number;
+      lifetimeInterestSaved: number;
+    };
+  };
 }

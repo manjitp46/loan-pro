@@ -11,6 +11,9 @@ import {
   LoanEligibilityInput,
   LoanEligibilityResult,
   LoanOffer,
+  MultiScenarioMatrixCell,
+  MultiScenarioMatrixInput,
+  MultiScenarioMatrixResult,
   PrepaymentSimulationInput,
   PrepaymentSimulationResult,
   RateChangePoint,
@@ -675,6 +678,159 @@ export class FinancialMath {
     return {
       offers: calculated,
       bestOverallOfferId: bestOffer.id,
+    };
+  }
+
+  /**
+   * Generates a Multi-Rate & Multi-Tenure sensitivity matrix and scenario comparison
+   */
+  public static generateMultiScenarioMatrix(input: MultiScenarioMatrixInput): MultiScenarioMatrixResult {
+    const { principal, rates } = input;
+    const sortedRates = [...rates].sort((a, b) => a - b);
+
+    let sortedTenuresMonths: number[] = [];
+    if (input.tenuresMonths && input.tenuresMonths.length > 0) {
+      sortedTenuresMonths = Array.from(new Set(input.tenuresMonths.map((m) => Math.round(m)))).sort((a, b) => a - b);
+    } else if (input.tenuresYears && input.tenuresYears.length > 0) {
+      sortedTenuresMonths = Array.from(new Set(input.tenuresYears.map((y) => Math.round(y * 12)))).sort((a, b) => a - b);
+    } else {
+      sortedTenuresMonths = [120, 180, 240, 300, 360];
+    }
+    const sortedTenuresYears = sortedTenuresMonths.map((m) => Math.round((m / 12) * 10) / 10);
+
+    const baseRate = input.baseRate ?? (sortedRates.includes(8.5) ? 8.5 : sortedRates[Math.floor(sortedRates.length / 2)] || 8.5);
+    const baseTenureMonths = input.baseTenureMonths ?? (input.baseTenureYears ? Math.round(input.baseTenureYears * 12) : (sortedTenuresMonths.includes(240) ? 240 : sortedTenuresMonths[Math.floor(sortedTenuresMonths.length / 2)] || 240));
+    const baseTenureYears = Math.round((baseTenureMonths / 12) * 10) / 10;
+
+    const baseEmi = this.calculateEMI(principal, baseRate, baseTenureMonths);
+    const baseTotalPayment = this.round(baseEmi * baseTenureMonths);
+    const baseTotalInterest = this.round(baseTotalPayment - principal);
+    const baseRatio = principal > 0 ? this.round((baseTotalInterest / principal) * 100) : 0;
+
+    const baseScenario: MultiScenarioMatrixCell = {
+      annualRate: baseRate,
+      tenureYears: baseTenureYears,
+      tenureMonths: baseTenureMonths,
+      monthlyEmi: baseEmi,
+      totalInterest: baseTotalInterest,
+      totalPayment: baseTotalPayment,
+      interestToPrincipalRatio: baseRatio,
+      differenceFromBaseEmi: 0,
+      differenceFromBaseInterest: 0,
+      differenceFromBaseTotal: 0,
+    };
+
+    let lowestEmiCell: MultiScenarioMatrixCell | null = null;
+    let lowestInterestCell: MultiScenarioMatrixCell | null = null;
+
+    const matrix: MultiScenarioMatrixCell[][] = [];
+
+    for (let rIdx = 0; rIdx < sortedRates.length; rIdx++) {
+      const rate = sortedRates[rIdx];
+      const row: MultiScenarioMatrixCell[] = [];
+
+      for (let tIdx = 0; tIdx < sortedTenuresMonths.length; tIdx++) {
+        const tenureMonths = sortedTenuresMonths[tIdx];
+        const tenureYears = sortedTenuresYears[tIdx];
+        const monthlyEmi = this.calculateEMI(principal, rate, tenureMonths);
+        const totalPayment = this.round(monthlyEmi * tenureMonths);
+        const totalInterest = this.round(totalPayment - principal);
+        const interestToPrincipalRatio = principal > 0 ? this.round((totalInterest / principal) * 100) : 0;
+
+        const cell: MultiScenarioMatrixCell = {
+          annualRate: rate,
+          tenureYears,
+          tenureMonths,
+          monthlyEmi,
+          totalInterest,
+          totalPayment,
+          interestToPrincipalRatio,
+          differenceFromBaseEmi: this.round(monthlyEmi - baseEmi),
+          differenceFromBaseInterest: this.round(totalInterest - baseTotalInterest),
+          differenceFromBaseTotal: this.round(totalPayment - baseTotalPayment),
+        };
+
+        if (!lowestEmiCell || monthlyEmi < lowestEmiCell.monthlyEmi) {
+          lowestEmiCell = cell;
+        }
+        if (!lowestInterestCell || totalInterest < lowestInterestCell.totalInterest) {
+          lowestInterestCell = cell;
+        }
+
+        row.push(cell);
+      }
+      matrix.push(row);
+    }
+
+    // Advisory Insight 1: Tenure Cut Savings
+    const cutToMonths = Math.max(60, baseTenureMonths - 60);
+    const cutToYears = Math.round((cutToMonths / 12) * 10) / 10;
+    const cutEmi = this.calculateEMI(principal, baseRate, cutToMonths);
+    const cutTotalInterest = this.round(cutEmi * cutToMonths - principal);
+    const tenureCutSavings = {
+      fromYears: baseTenureYears,
+      toYears: cutToYears,
+      monthlyEmiIncrease: this.round(cutEmi - baseEmi),
+      lifetimeInterestSaved: this.round(baseTotalInterest - cutTotalInterest),
+    };
+
+    // Advisory Insight 2: Rate Hike Impact (+0.50% hike)
+    const hikePercent = 0.5;
+    const revisedRate = this.round(baseRate + hikePercent);
+    const hikeEmi = this.calculateEMI(principal, revisedRate, baseTenureMonths);
+    const hikeTotalInterest = this.round(hikeEmi * baseTenureMonths - principal);
+
+    // Equivalent tenure extension if EMI kept constant at baseEmi
+    let equivalentTenureExtensionMonths = 0;
+    const monthlyHikeRate = revisedRate / 12 / 100;
+    if (principal * monthlyHikeRate < baseEmi) {
+      const nHike = -Math.log(1 - (principal * monthlyHikeRate) / baseEmi) / Math.log(1 + monthlyHikeRate);
+      equivalentTenureExtensionMonths = Math.max(0, Math.round(nHike - baseTenureMonths));
+    }
+
+    // Equivalent lump sum prepayment needed to keep EMI at baseEmi
+    let equivalentLumpSumPrepayment = 0;
+    if (monthlyHikeRate > 0) {
+      const pvFactor = (1 - Math.pow(1 + monthlyHikeRate, -baseTenureMonths)) / monthlyHikeRate;
+      const targetPrincipal = baseEmi * pvFactor;
+      equivalentLumpSumPrepayment = this.round(Math.max(0, principal - targetPrincipal));
+    }
+
+    const rateHikeImpact = {
+      hikePercent,
+      revisedRate,
+      monthlyEmiIncrease: this.round(hikeEmi - baseEmi),
+      lifetimeInterestIncrease: this.round(hikeTotalInterest - baseTotalInterest),
+      equivalentTenureExtensionMonths,
+      equivalentLumpSumPrepayment,
+    };
+
+    // Advisory Insight 3: Rate Drop Advantage (-0.50% drop)
+    const dropPercent = 0.5;
+    const dropRate = this.round(Math.max(0.1, baseRate - dropPercent));
+    const dropEmi = this.calculateEMI(principal, dropRate, baseTenureMonths);
+    const dropTotalInterest = this.round(dropEmi * baseTenureMonths - principal);
+    const rateDropAdvantage = {
+      dropPercent,
+      revisedRate: dropRate,
+      monthlyEmiSavings: this.round(baseEmi - dropEmi),
+      lifetimeInterestSaved: this.round(baseTotalInterest - dropTotalInterest),
+    };
+
+    return {
+      principal,
+      rates: sortedRates,
+      tenuresYears: sortedTenuresYears,
+      tenuresMonths: sortedTenuresMonths,
+      matrix,
+      baseScenario,
+      lowestEmiCell: lowestEmiCell || baseScenario,
+      lowestInterestCell: lowestInterestCell || baseScenario,
+      advisoryInsights: {
+        tenureCutSavings,
+        rateHikeImpact,
+        rateDropAdvantage,
+      },
     };
   }
 }

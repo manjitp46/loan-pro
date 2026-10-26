@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { TrendingDown, Calendar, Plus, Trash2, Clock, CheckCircle, Sparkles, Share2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { TrendingDown, Calendar, Plus, Trash2, Clock, CheckCircle, Sparkles, Share2, Check } from 'lucide-react';
 import { CurrencyType, LumpSumPrepayment, PrepaymentSimulationResult } from '../../types';
 import { ClientCalculatorEngine } from '../../utils/calculatorEngine';
 import { formatCurrency, formatPercent, formatTenure, getCurrencySymbol } from '../../utils/formatters';
 import { NumericInput } from '../common/NumericInput';
 import { AmortizationTable } from '../schedule/AmortizationTable';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
+import { copyToClipboard, generateShareUrl, syncAppState } from '../../utils/urlState';
 
 interface PrepaymentProps {
   currency: CurrencyType;
@@ -17,6 +18,7 @@ export const PrepaymentSimulator: React.FC<PrepaymentProps> = ({ currency, onSav
   const [annualRate, setAnnualRate] = useState<number>(8.5);
   const [tenureYears, setTenureYears] = useState<number>(20);
   const [strategy, setStrategy] = useState<'reduce_tenure' | 'reduce_emi'>('reduce_tenure');
+  const [copiedUrl, setCopiedUrl] = useState<boolean>(false);
 
   // Prepayment controls
   const [extraMonthly, setExtraMonthly] = useState<number>(5000);
@@ -24,6 +26,33 @@ export const PrepaymentSimulator: React.FC<PrepaymentProps> = ({ currency, onSav
   const [lumpSums, setLumpSums] = useState<LumpSumPrepayment[]>([
     { id: '1', month: 12, amount: 200000 },
   ]);
+
+  useEffect(() => {
+    syncAppState({
+      tab: 'prepayment',
+      currency,
+      amount: principal,
+      rate: annualRate,
+      tenure: tenureYears,
+      extraMonthly,
+    });
+  }, [principal, annualRate, tenureYears, extraMonthly, currency]);
+
+  const handleCopyDirectLink = async () => {
+    const url = generateShareUrl({
+      tab: 'prepayment',
+      currency,
+      amount: principal,
+      rate: annualRate,
+      tenure: tenureYears,
+      extraMonthly,
+    });
+    const ok = await copyToClipboard(url);
+    if (ok) {
+      setCopiedUrl(true);
+      setTimeout(() => setCopiedUrl(false), 3000);
+    }
+  };
 
   const addLumpSum = () => {
     setLumpSums((prev) => [
@@ -109,6 +138,19 @@ export const PrepaymentSimulator: React.FC<PrepaymentProps> = ({ currency, onSav
             <p className="text-emerald-100/80 text-xs sm:text-sm max-w-xl">
               Small extra contributions toward principal early on drastically slash the compound interest charged over decades.
             </p>
+            <div className="pt-2 flex items-center gap-2">
+              <button
+                onClick={handleCopyDirectLink}
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition shadow-xs ${
+                  copiedUrl
+                    ? 'bg-white text-emerald-900'
+                    : 'bg-white/20 text-white hover:bg-white/30 border border-white/20'
+                }`}
+              >
+                {copiedUrl ? <Check className="w-3.5 h-3.5 text-emerald-700" /> : <Share2 className="w-3.5 h-3.5" />}
+                <span>{copiedUrl ? 'Direct Link Copied!' : 'Copy Direct URL'}</span>
+              </button>
+            </div>
           </div>
 
           {/* Quick Highlight Box */}

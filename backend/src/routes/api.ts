@@ -31,6 +31,7 @@ router.post('/calculate/balance-transfer', LoanController.calculateBalanceTransf
 router.post('/calculate/eligibility', LoanController.calculateEligibility);
 router.post('/calculate/floating-rate', LoanController.simulateFloatingRate);
 router.post('/calculate/compare', LoanController.compareOffers);
+router.post('/calculate/multi-scenario', LoanController.calculateMultiScenario);
 
 // Saved & Shared Calculations
 router.post('/saved', SavedController.save);

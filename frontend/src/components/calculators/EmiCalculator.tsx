@@ -11,6 +11,9 @@ import {
   Calendar,
   Layers,
   ArrowRight,
+  Share2,
+  Check,
+  Sparkles,
 } from 'lucide-react';
 import { CurrencyType, EmiCalculationResult, LoanPreset, LoanType } from '../../types';
 import { ClientCalculatorEngine } from '../../utils/calculatorEngine';
@@ -20,29 +23,70 @@ import { PrincipalInterestDonut } from '../charts/PrincipalInterestDonut';
 import { AmortizationBarChart } from '../charts/AmortizationBarChart';
 import { BalanceScheduleAreaChart } from '../charts/BalanceScheduleAreaChart';
 import { AmortizationTable } from '../schedule/AmortizationTable';
+import { copyToClipboard, generateShareUrl, syncAppState } from '../../utils/urlState';
 
 interface EmiCalculatorProps {
   currency: CurrencyType;
   presets: LoanPreset[];
   onSaveShare: (payload: any) => void;
+  onOpenMultiRatePlanner?: () => void;
+  initialType?: LoanType;
+  initialAmount?: number;
+  initialRate?: number;
+  initialTenure?: number;
+  initialTenureUnit?: 'years' | 'months';
+  initialDownPaymentPercent?: number;
 }
 
-export const EmiCalculator: React.FC<EmiCalculatorProps> = ({ currency, presets, onSaveShare }) => {
-  const [selectedType, setSelectedType] = useState<LoanType>('home');
+export const EmiCalculator: React.FC<EmiCalculatorProps> = ({
+  currency,
+  presets,
+  onSaveShare,
+  onOpenMultiRatePlanner,
+  initialType,
+  initialAmount,
+  initialRate,
+  initialTenure,
+  initialTenureUnit,
+  initialDownPaymentPercent,
+}) => {
+  const [selectedType, setSelectedType] = useState<LoanType>(initialType || 'home');
 
   // Input states
-  const [assetValue, setAssetValue] = useState<number>(5000000);
-  const [downPaymentPercent, setDownPaymentPercent] = useState<number>(20);
-  const [annualRate, setAnnualRate] = useState<number>(8.5);
-  const [tenureYears, setTenureYears] = useState<number>(20);
-  const [tenureUnit, setTenureUnit] = useState<'years' | 'months'>('years');
-  const [tenureMonthsDirect, setTenureMonthsDirect] = useState<number>(240);
+  const [assetValue, setAssetValue] = useState<number>(initialAmount ?? 5000000);
+  const [downPaymentPercent, setDownPaymentPercent] = useState<number>(initialDownPaymentPercent ?? 20);
+  const [annualRate, setAnnualRate] = useState<number>(initialRate ?? 8.5);
+  const [tenureYears, setTenureYears] = useState<number>(initialTenure ?? 20);
+  const [tenureUnit, setTenureUnit] = useState<'years' | 'months'>(initialTenureUnit ?? 'years');
+  const [tenureMonthsDirect, setTenureMonthsDirect] = useState<number>((initialTenure ?? 20) * 12);
   const [processingFeePercent, setProcessingFeePercent] = useState<number>(0.5);
   const [taxPercent, setTaxPercent] = useState<number>(18);
   const [activeChartTab, setActiveChartTab] = useState<'donut' | 'bars' | 'area'>('donut');
+  const [copiedUrl, setCopiedUrl] = useState<boolean>(false);
 
-  // Load preset when loan type tab changes
+  // Sync to URL search params & local storage
   useEffect(() => {
+    syncAppState({
+      tab: 'emi',
+      type: selectedType,
+      currency,
+      amount: assetValue,
+      rate: annualRate,
+      tenure: tenureUnit === 'years' ? tenureYears : tenureMonthsDirect,
+      tenureUnit,
+      downPaymentPercent,
+    });
+  }, [selectedType, currency, assetValue, annualRate, tenureYears, tenureMonthsDirect, tenureUnit, downPaymentPercent]);
+
+  // Load preset when loan type tab changes (only if not loaded from explicit initial values)
+  const isFirstMount = React.useRef(true);
+  useEffect(() => {
+    if (isFirstMount.current && (initialAmount || initialRate || initialTenure)) {
+      isFirstMount.current = false;
+      return;
+    }
+    isFirstMount.current = false;
+
     const preset = presets.find((p) => p.type === selectedType);
     if (preset) {
       setAssetValue(preset.defaultAmount);
@@ -100,29 +144,106 @@ export const EmiCalculator: React.FC<EmiCalculatorProps> = ({ currency, presets,
     });
   };
 
+  const handleCopyDirectLink = async () => {
+    const url = generateShareUrl({
+      tab: 'emi',
+      type: selectedType,
+      currency,
+      amount: assetValue,
+      rate: annualRate,
+      tenure: tenureUnit === 'years' ? tenureYears : tenureMonthsDirect,
+      tenureUnit,
+      downPaymentPercent,
+    });
+    const ok = await copyToClipboard(url);
+    if (ok) {
+      setCopiedUrl(true);
+      setTimeout(() => setCopiedUrl(false), 3000);
+    }
+  };
+
   return (
-    <div className="space-y-8">
-      {/* Loan Type Tabs */}
-      <div className="flex flex-wrap gap-2 p-1.5 bg-slate-200/60 rounded-xl border border-slate-200">
-        {loanCategories.map((cat) => {
-          const Icon = cat.icon;
-          const isSelected = selectedType === cat.type;
-          return (
-            <button
-              key={cat.type}
-              onClick={() => setSelectedType(cat.type)}
-              className={`flex-1 min-w-[130px] flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs sm:text-sm font-bold transition-all ${
-                isSelected
-                  ? 'bg-white text-emerald-800 shadow-sm border border-slate-200/60'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
-              }`}
-            >
-              <Icon className={`w-4 h-4 ${isSelected ? 'text-emerald-600' : 'text-slate-400'}`} />
-              <span>{cat.label}</span>
-            </button>
-          );
-        })}
+    <div className="space-y-6">
+      {/* Top Controls: Loan Type Selector & Direct Share */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        {/* Loan Type Tabs */}
+        <div className="flex flex-wrap gap-1.5 p-1.5 bg-slate-200/60 rounded-xl border border-slate-200 flex-1">
+          {loanCategories.map((cat) => {
+            const Icon = cat.icon;
+            const isSelected = selectedType === cat.type;
+            return (
+              <button
+                key={cat.type}
+                onClick={() => setSelectedType(cat.type)}
+                className={`flex-1 min-w-[110px] flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs sm:text-sm font-bold transition-all ${
+                  isSelected
+                    ? 'bg-white text-emerald-800 shadow-sm border border-slate-200/60'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                }`}
+              >
+                <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-emerald-600' : 'text-slate-400'}`} />
+                <span>{cat.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Copy Direct Share URL Button */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleCopyDirectLink}
+            className={`flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-xl transition shadow-xs whitespace-nowrap ${
+              copiedUrl
+                ? 'bg-emerald-600 text-white'
+                : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-300'
+            }`}
+            title="Copy direct share URL for this loan type & parameters"
+          >
+            {copiedUrl ? <Check className="w-3.5 h-3.5" /> : <Share2 className="w-3.5 h-3.5 text-emerald-600" />}
+            <span>{copiedUrl ? 'Link Copied!' : 'Copy Direct URL'}</span>
+          </button>
+        </div>
       </div>
+
+      {/* Copy confirmation toast */}
+      {copiedUrl && (
+        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 flex items-center gap-2">
+          <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+          <span className="font-semibold">
+            Direct link copied to clipboard! Anyone opening this link will see your exact loan calculation.
+          </span>
+        </div>
+      )}
+
+      {/* Home Loan Multi-Rate Repayment Planner Banner */}
+      {selectedType === 'home' && onOpenMultiRatePlanner && (
+        <div className="bg-gradient-to-r from-emerald-600 via-teal-700 to-slate-900 text-white rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0 text-emerald-300">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-white">Need to Compare Multiple Rates & Tenures?</h3>
+                <span className="px-2 py-0.2 bg-emerald-400 text-slate-950 text-[10px] font-black rounded-full uppercase">
+                  NEW
+                </span>
+              </div>
+              <p className="text-xs text-white/80 mt-0.5">
+                Stress-test multiple interest rates (e.g. 8.0%, 8.5%, 9.0%) and tenures side-by-side with our interactive Sensitivity Matrix.
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={onOpenMultiRatePlanner}
+            className="flex items-center justify-center gap-1.5 px-4 py-2 bg-white text-emerald-800 hover:bg-emerald-50 text-xs font-black rounded-xl shadow-xs transition whitespace-nowrap"
+          >
+            <span>Open Multi-Rate Planner</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Main Two-Column Calculator Section */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

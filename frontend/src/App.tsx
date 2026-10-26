@@ -6,10 +6,12 @@ import { PrepaymentSimulator } from './components/calculators/PrepaymentSimulato
 import { BalanceTransfer } from './components/calculators/BalanceTransfer';
 import { EligibilityCalculator } from './components/calculators/EligibilityCalculator';
 import { FixedVsFloating } from './components/calculators/FixedVsFloating';
+import { MultiRatePlanner } from './components/calculators/MultiRatePlanner';
 import { SavedCalculationsModal } from './components/saved/SavedCalculationsModal';
 import { ShareModal } from './components/common/ShareModal';
 import { CurrencyType, LoanPreset, SavedCalculationItem } from './types';
 import { fetchPresets, fetchSavedByCode, fetchSettings, saveCalculation } from './services/api';
+import { getInitialAppState, syncAppState } from './utils/urlState';
 import { Shield, Sparkles, CheckCircle, Calculator, Info, Megaphone, X, Settings } from 'lucide-react';
 
 const BANNER_GRADIENTS: Record<string, string> = {
@@ -31,8 +33,9 @@ const FOOTER_THEMES: Record<string, { iconBg: string; linkColor: string }> = {
 };
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<string>('emi');
-  const [currency, setCurrency] = useState<CurrencyType>('INR');
+  const initial = getInitialAppState();
+  const [activeTab, setActiveTab] = useState<string>(initial.tab || 'emi');
+  const [currency, setCurrency] = useState<CurrencyType>(initial.currency || 'INR');
   const [presets, setPresets] = useState<LoanPreset[]>([]);
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [showBanner, setShowBanner] = useState<boolean>(true);
@@ -42,6 +45,16 @@ export const App: React.FC = () => {
     shareCode: string;
     shareUrl: string;
   } | null>(null);
+
+  const handleTabChange = (newTab: string) => {
+    setActiveTab(newTab);
+    syncAppState({ tab: newTab });
+  };
+
+  const handleCurrencyChange = (newCurr: CurrencyType) => {
+    setCurrency(newCurr);
+    syncAppState({ currency: newCurr });
+  };
 
   // Load presets and settings on mount
   useEffect(() => {
@@ -57,7 +70,7 @@ export const App: React.FC = () => {
         if (cfg.site_title) {
           document.title = cfg.site_title;
         }
-        if (cfg.default_currency) {
+        if (!initial.currency && cfg.default_currency) {
           setCurrency(cfg.default_currency as CurrencyType);
         }
       }
@@ -131,9 +144,9 @@ export const App: React.FC = () => {
       {/* Top Navbar */}
       <Navbar
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={handleTabChange}
         currency={currency}
-        setCurrency={setCurrency}
+        setCurrency={handleCurrencyChange}
         onOpenSaved={() => setIsSavedModalOpen(true)}
         siteTitle={settings.site_title}
         brandTheme={activeTheme}
@@ -147,6 +160,27 @@ export const App: React.FC = () => {
             currency={currency}
             presets={presets}
             onSaveShare={handleSaveShare}
+            onOpenMultiRatePlanner={() => handleTabChange('multi_rate')}
+            initialType={initial.type}
+            initialAmount={initial.amount}
+            initialRate={initial.rate}
+            initialTenure={initial.tenure}
+            initialTenureUnit={initial.tenureUnit}
+            initialDownPaymentPercent={initial.downPaymentPercent}
+          />
+        )}
+
+        {activeTab === 'multi_rate' && (
+          <MultiRatePlanner
+            currency={currency}
+            onSaveShare={handleSaveShare}
+            onSwitchToSimpleEmi={() => handleTabChange('emi')}
+            initialPrincipal={initial.amount}
+            initialRates={initial.rates}
+            initialTenures={initial.tenures}
+            initialBaseRate={initial.baseRate}
+            initialBaseTenure={initial.baseTenure}
+            initialTenureUnit={initial.tenureUnit}
           />
         )}
 

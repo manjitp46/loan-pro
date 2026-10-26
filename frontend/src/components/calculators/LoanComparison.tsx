@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { Plus, Trash2, Award, TrendingDown, ArrowDownRight, FileText, Share2, CheckCircle2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Trash2, Award, TrendingDown, ArrowDownRight, FileText, Share2, CheckCircle2, Check } from 'lucide-react';
 import { CurrencyType, LoanComparisonResult, LoanOfferItem } from '../../types';
 import { ClientCalculatorEngine } from '../../utils/calculatorEngine';
 import { formatCurrency, formatPercent, getCurrencySymbol } from '../../utils/formatters';
 import { NumericInput } from '../common/NumericInput';
 import { exportComparisonToPdf } from '../../utils/exportUtils';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
+import { copyToClipboard, generateShareUrl, syncAppState } from '../../utils/urlState';
 
 interface ComparisonProps {
   currency: CurrencyType;
@@ -45,6 +46,26 @@ export const LoanComparison: React.FC<ComparisonProps> = ({ currency, onSaveShar
       otherCharges: 1000,
     },
   ]);
+  const [copiedUrl, setCopiedUrl] = useState<boolean>(false);
+
+  useEffect(() => {
+    syncAppState({
+      tab: 'comparison',
+      currency,
+    });
+  }, [currency]);
+
+  const handleCopyDirectLink = async () => {
+    const url = generateShareUrl({
+      tab: 'comparison',
+      currency,
+    });
+    const ok = await copyToClipboard(url);
+    if (ok) {
+      setCopiedUrl(true);
+      setTimeout(() => setCopiedUrl(false), 3000);
+    }
+  };
 
   const updateOffer = (id: string, field: keyof LoanOfferItem, value: any) => {
     setOffers((prev) =>
@@ -127,6 +148,19 @@ export const LoanComparison: React.FC<ComparisonProps> = ({ currency, onSaveShar
               <span>Add Loan Offer</span>
             </button>
           )}
+
+          <button
+            onClick={handleCopyDirectLink}
+            className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold rounded-lg transition shadow-sm ${
+              copiedUrl
+                ? 'bg-emerald-600 text-white'
+                : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-300'
+            }`}
+            title="Copy direct share URL for comparison"
+          >
+            {copiedUrl ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4 text-emerald-600" />}
+            <span>{copiedUrl ? 'Copied!' : 'Copy Direct URL'}</span>
+          </button>
 
           <button
             onClick={() => exportComparisonToPdf(comparisonResult, currency)}
